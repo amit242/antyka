@@ -46,7 +46,7 @@ server.get('*', async (req, res, next) => {
         onSetMeta: (key, value) => data[key] = value,
         onPageNotFound: () => notFound = true
       }} />);
-
+    //console.log('AMIT 123', server.get('port'));
     data.body = React.renderToString(app);
     data.css = css.join('');
     let html = template(data);

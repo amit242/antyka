@@ -9,7 +9,6 @@ let viewport = {width: 1366, height: 768}; // Default size for server-side rende
 const RESIZE_EVENT = 'resize';
 
 function handleWindowResize() {
-  
   if (viewport.width !== window.innerWidth || viewport.height !== window.innerHeight) {
     viewport = {width: window.innerWidth, height: window.innerHeight};
     EE.emit(RESIZE_EVENT, viewport);
