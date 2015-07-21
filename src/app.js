@@ -26,10 +26,11 @@ let onSetMeta = (name, content) => {
 
 function run() {
   // Render the top-level React component
+  console.log('document.title', document.title);
   let props = {
     path: path,
     context: {
-      onSetTitle: value => document.title = value,
+      onSetTitle: value => {document.title = value; console.log('inside arrow', value);},
       onSetMeta
     }
   };

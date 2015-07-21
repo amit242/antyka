@@ -14,6 +14,7 @@ import App from './components/App';
 const server = express();
 
 server.set('port', (process.env.PORT || 5000));
+console.log(server.get('port'));
 server.use(express.static(path.join(__dirname, 'public')));
 
 //
@@ -38,15 +39,16 @@ server.get('*', async (req, res, next) => {
     let notFound = false;
     let css = [];
     let data = {description: ''};
+    
     let app = (<App
       path={req.path}
       context={{
         onInsertCss: value => css.push(value),
-        onSetTitle: value => data.title = value,
+        onSetTitle: value => {data.title = value; console.log('title value', value)},
         onSetMeta: (key, value) => data[key] = value,
         onPageNotFound: () => notFound = true
       }} />);
-    //console.log('AMIT 123', server.get('port'));
+    
     data.body = React.renderToString(app);
     data.css = css.join('');
     let html = template(data);
@@ -64,7 +66,9 @@ server.get('*', async (req, res, next) => {
 // -----------------------------------------------------------------------------
 
 server.listen(server.get('port'), () => {
+  console.log('amit');
   if (process.send) {
+    console.log('online');
     process.send('online');
   } else {
     console.log('The server is running at http://localhost:' + server.get('port'));
