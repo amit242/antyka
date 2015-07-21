@@ -9,6 +9,7 @@ import AppActions from './actions/AppActions';
 import ActionTypes from './constants/ActionTypes';
 
 let path = decodeURI(window.location.pathname);
+console.log('AMIT: Path:', path);
 let onSetMeta = (name, content) => {
   // Remove and create a new <meta /> tag in order to make it work
   // with bookmarks in Safari
@@ -30,7 +31,7 @@ function run() {
   let props = {
     path: path,
     context: {
-      onSetTitle: value => {document.title = value; console.log('inside arrow', value);},
+      onSetTitle: value => {document.title = value; console.log('AMIT: inside arrow', value);},
       onSetMeta
     }
   };

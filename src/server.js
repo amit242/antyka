@@ -44,7 +44,7 @@ server.get('*', async (req, res, next) => {
       path={req.path}
       context={{
         onInsertCss: value => css.push(value),
-        onSetTitle: value => {data.title = value; console.log('title value', value)},
+        onSetTitle: value => {data.title = value; console.log('AMIT: title value', value)},
         onSetMeta: (key, value) => data[key] = value,
         onPageNotFound: () => notFound = true
       }} />);
@@ -66,7 +66,7 @@ server.get('*', async (req, res, next) => {
 // -----------------------------------------------------------------------------
 
 server.listen(server.get('port'), () => {
-  console.log('amit');
+  console.log('AMIT: Listening to port:', server.get('port'));
   if (process.send) {
     console.log('online');
     process.send('online');

@@ -19,6 +19,7 @@ class ContentPage {
 
   render() {
     this.context.onSetTitle(this.props.title);
+    console.log('AMIT: content render:', this.props.path, this.props.title);
     return (
       <div className="ContentPage">
         <div className="ContentPage-container">
