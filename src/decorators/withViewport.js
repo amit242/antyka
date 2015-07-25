@@ -4,14 +4,14 @@ import React, { Component } from 'react'; // eslint-disable-line no-unused-vars
 import EventEmitter from 'eventemitter3';
 import { canUseDOM } from '../../node_modules/react/lib/ExecutionEnvironment';
 
-let EE;
+let eventEmitter;
 let viewport = {width: 1366, height: 768}; // Default size for server-side rendering
 const RESIZE_EVENT = 'resize';
 
 function handleWindowResize() {
   if (viewport.width !== window.innerWidth || viewport.height !== window.innerHeight) {
     viewport = {width: window.innerWidth, height: window.innerHeight};
-    EE.emit(RESIZE_EVENT, viewport);
+    eventEmitter.emit(RESIZE_EVENT, viewport);
   }
 }
 
@@ -20,38 +20,41 @@ function withViewport(ComposedComponent) {
 
     constructor() {
       super();
-
       this.state = {
-        viewport: canUseDOM ? {width: window.innerWidth, height: window.innerHeight} : viewport
+        viewport: canUseDOM ? {width: window.innerWidth, height: window.innerHeight} : viewport,
+        isSmallViewport: canUseDOM ? this.isSmall(window.innerWidth, window.innerHeight) : this.isSmall(viewport.width, viewport.height)
       };
     }
 
     componentDidMount() {
-      if (!EE) {
-        EE = new EventEmitter();
+      if (!eventEmitter) {
+        eventEmitter = new EventEmitter();
         window.addEventListener('resize', handleWindowResize);
         window.addEventListener('orientationchange', handleWindowResize);
       }
-      EE.on('resize', this.handleResize, this);
+      eventEmitter.on('resize', this.handleResize, this);
     }
 
     componentWillUnmount() {
-      EE.removeListener(RESIZE_EVENT, this.handleResize, this);
-      if (!EE.listeners(RESIZE_EVENT, true)) {
-        window.removeEventListener('resize', handleWindowResize);
-        window.removeEventListener('orientationchange', handleWindowResize);
-        EE = null;
+      eventEmitter.removeListener(RESIZE_EVENT, this.handleResize, this);
+      if (!eventEmitter.listeners(RESIZE_EVENT, true)) {
+        window.removeventEmitterventListener('resize', handleWindowResize);
+        window.removeventEmitterventListener('orientationchange', handleWindowResize);
+        eventEmitter = null;
       }
     }
 
     render() {
-      return <ComposedComponent {...this.props} viewport={this.state.viewport}/>;
+      return <ComposedComponent {...this.props} viewport={this.state.viewport} isSmallViewport={this.state.isSmallViewport} />;
     }
 
     handleResize(value) {
-      this.setState({viewport: value});
+      this.setState({viewport: value, isSmallViewport: this.isSmall(value.width)});
     }
 
+    isSmall(width, height) {
+      return width < 400 || height < 300;
+    }
   };
 }
 

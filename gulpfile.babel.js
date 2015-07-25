@@ -15,6 +15,7 @@ import mkdirp from 'mkdirp';
 import runSequence from 'run-sequence';
 import webpack from 'webpack';
 import minimist from 'minimist';
+import uglify from 'gulp-uglify';
 
 const $ = gulpLoadPlugins();
 const argv = minimist(process.argv.slice(2));
@@ -55,6 +56,18 @@ gulp.task('resources', () => {
     .pipe($.size({title: 'resources'}));
 });
 
+// Server Files
+gulp.task('serverFiles', () => {
+  src.resources = [
+    'serverfiles/.gitignore',
+    'serverfiles/Procfile'
+  ];
+  return gulp.src(src.resources)
+    .pipe($.changed('build'))
+    .pipe(gulp.dest('build'))
+    .pipe($.size({title: 'serverFiles'}));
+});
+
 // Bundle
 gulp.task('bundle', cb => {
   const config = require('./webpack.config.js');
@@ -92,7 +105,7 @@ gulp.task('bundle', cb => {
 
 // Build the app from source code
 gulp.task('build', ['clean'], cb => {
-  runSequence(['assets', 'resources'], ['bundle'], cb);
+  runSequence(['assets', 'resources', 'serverFiles'], ['bundle'], cb);
 });
 
 // Build and start watching for modifications

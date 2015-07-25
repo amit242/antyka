@@ -8,7 +8,7 @@ const router = new Router();
 router.get('/', async (req, res, next) => {
   try {
     let path = req.query.path;
-
+    console.log('AMIT: query: path:', path);
     if (!path) {
       res.status(400).send({error: `The 'path' query parameter cannot be empty.`});
     }

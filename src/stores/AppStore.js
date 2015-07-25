@@ -56,6 +56,7 @@ var AppStore = Object.assign({}, EventEmitter.prototype, {
 
 AppStore.dispatchToken = Dispatcher.register((action) => {
 
+  console.log('AppStore.dispatchToken:', action.type, action.page);
   switch (action.type) {
 
     case ActionTypes.GET_PAGE:
@@ -66,7 +67,6 @@ AppStore.dispatchToken = Dispatcher.register((action) => {
     case ActionTypes.RECEIVE_PAGE:
       loading = false;
       if (!action.err) {
-          
         pages[action.page.path] = action.page;
       }
       AppStore.emitChange();

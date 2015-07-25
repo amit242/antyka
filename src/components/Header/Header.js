@@ -1,4 +1,4 @@
-/*! React Starter Kit | MIT License | http://www.reactstarterkit.com/ */
+  /*! React Starter Kit | MIT License | http://www.reactstarterkit.com/ */
 
 import React from 'react';
 import styles from './Header.less';
@@ -14,11 +14,10 @@ class Header {
       <div className="Header">
         <div className="Header-container">
           <a className="Header-brand" href="/" onClick={Link.handleClick}>
-            <img className="Header-brandImg" src={require('./logo-small2.png')} width="114" height="62" alt="closyaar" />
+            <img className="Header-brandImg" src={require('./Closyaar-logo-medium.png')} width="114" height="62" alt="closyaar" />
           </a>
           <Navigation className="Header-nav" />
           <div className="Header-banner">
-            
           </div>
         </div>
       </div>

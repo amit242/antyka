@@ -6,10 +6,11 @@ import fs from 'fs';
 import path from 'path';
 import express from 'express';
 import React from 'react';
-import './core/Dispatcher';
-import './stores/AppStore';
+//import './core/Dispatcher';
+//import './stores/AppStore';
 import db from './core/Database';
 import App from './components/App';
+import ClientDetection from './utils/ClientDetection';
 
 const server = express();
 
@@ -32,23 +33,24 @@ const template = _.template(fs.readFileSync(templateFile, 'utf8'));
 
 server.get('*', async (req, res, next) => {
   try {
+    let isMobile = ClientDetection.isMobile(req.headers['user-agent']);
+    console.log('AMIT: isMobile:', isMobile);
     // TODO: Temporary fix #159
-    if (['/', '/about', '/privacy'].indexOf(req.path) !== -1) {
+    if (['/about', '/privacy'].indexOf(req.path) !== -1) {
       await db.getPage(req.path);
     }
     let notFound = false;
     let css = [];
     let data = {description: ''};
-    
     let app = (<App
       path={req.path}
+      isMobile={isMobile}
       context={{
         onInsertCss: value => css.push(value),
-        onSetTitle: value => {data.title = value; console.log('AMIT: title value', value)},
+        onSetTitle: value => {data.title = value; console.log('AMIT: title value:', value); },
         onSetMeta: (key, value) => data[key] = value,
         onPageNotFound: () => notFound = true
       }} />);
-    
     data.body = React.renderToString(app);
     data.css = css.join('');
     let html = template(data);
@@ -57,6 +59,7 @@ server.get('*', async (req, res, next) => {
     }
     res.send(html);
   } catch (err) {
+    console.log('AMIT: server exception:', err);
     next(err);
   }
 });
@@ -68,7 +71,7 @@ server.get('*', async (req, res, next) => {
 server.listen(server.get('port'), () => {
   console.log('AMIT: Listening to port:', server.get('port'));
   if (process.send) {
-    console.log('online');
+    console.log('AMIT: going online');
     process.send('online');
   } else {
     console.log('The server is running at http://localhost:' + server.get('port'));

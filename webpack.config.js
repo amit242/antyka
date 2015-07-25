@@ -32,7 +32,7 @@ const GLOBALS = {
 
 //
 // Common configuration chunk to be used for both
-// client-side (app.js) and server-side (server.js) bundles
+// client-side (client.js) and server-side (server.js) bundles
 // -----------------------------------------------------------------------------
 
 const config = {
@@ -103,14 +103,14 @@ const config = {
 };
 
 //
-// Configuration for the client-side bundle (app.js)
+// Configuration for the client-side bundle (client.js)
 // -----------------------------------------------------------------------------
-
+console.log('Build mode is:', DEBUG ? 'DEBUG' : 'RELEASE');
 const appConfig = merge({}, config, {
-  entry: './src/app.js',
+  entry: './src/client.js',
   output: {
     path: './build/public',
-    filename: 'app.js'
+    filename: 'client.js'
   },
   devtool: DEBUG ? 'source-map' : false,
   plugins: config.plugins.concat([

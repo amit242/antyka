@@ -7,6 +7,7 @@ import App from './components/App';
 import Dispatcher from './core/Dispatcher';
 import AppActions from './actions/AppActions';
 import ActionTypes from './constants/ActionTypes';
+import ClientDetection from './utils/ClientDetection';
 
 let path = decodeURI(window.location.pathname);
 console.log('AMIT: Path:', path);
@@ -27,11 +28,13 @@ let onSetMeta = (name, content) => {
 
 function run() {
   // Render the top-level React component
-  console.log('document.title', document.title);
+  let isMobile = ClientDetection.isMobile(navigator.userAgent);
+
   let props = {
     path: path,
+    isMobile: {isMobile},
     context: {
-      onSetTitle: value => {document.title = value; console.log('AMIT: inside arrow', value);},
+      onSetTitle: value => {document.title = value; },
       onSetMeta
     }
   };

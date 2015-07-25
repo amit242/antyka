@@ -9,17 +9,17 @@ import AppStore from '../../stores/AppStore';
 import Header from '../Header';
 import ContentPage from '../ContentPage';
 import ContactPage from '../ContactPage';
-import LoginPage from '../LoginPage';
+import Login from '../Login';
 import RegisterPage from '../RegisterPage';
 import NotFoundPage from '../NotFoundPage';
 import Feedback from '../Feedback';
 import Footer from '../Footer';
 
-const pages = { ContentPage, ContactPage, LoginPage, RegisterPage, NotFoundPage };
+const pages = { ContentPage, ContactPage, Login, RegisterPage, NotFoundPage };
 
 @withContext
 @withStyles(styles)
-class App {
+export default class App {
 
   static propTypes = {
     path: PropTypes.string.isRequired
@@ -39,26 +39,22 @@ class App {
 
   render() {
     let component;
-
+    console.log('APP render', this.props.isMobile);
     switch (this.props.path) {
-
-      case '/':
       case '/about':
       case '/privacy':
         let page = AppStore.getPage(this.props.path);
         component = React.createElement(pages[page.component], page);
         break;
-
+      case '/register':
+        component = <RegisterPage />;
+        break;
       case '/contact':
         component = <ContactPage />;
         break;
-
+      case '/':
       case '/login':
-        component = <LoginPage />;
-        break;
-
-      case '/register':
-        component = <RegisterPage />;
+        component = <Login />;
         break;
     }
 
@@ -77,4 +73,4 @@ class App {
 
 }
 
-export default App;
+//export default App;

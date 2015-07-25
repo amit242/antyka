@@ -1,6 +1,7 @@
 /*! React Starter Kit | MIT License | http://www.reactstarterkit.com/ */
 
 import React, { PropTypes } from 'react';
+import classNames from 'classnames';
 import withStyles from '../../decorators/withStyles';
 import styles from './TextBox.less';
 
@@ -8,7 +9,8 @@ import styles from './TextBox.less';
 class TextBox {
 
   static propTypes = {
-    maxLines: PropTypes.number
+    maxLines: PropTypes.number,
+    textboxLabel: PropTypes.string
   };
 
   static defaultProps = {
@@ -17,7 +19,8 @@ class TextBox {
 
   render() {
     return (
-      <div className="TextBox">
+      <div className={classNames(this.props.className, 'TextBox')}>
+        <span className="TextBox-span">{this.props.textboxLabel}</span>
         {this.props.maxLines > 1 ?
           <textarea {...this.props} className="TextBox-input" ref="input" key="input" rows={this.props.maxLines} /> :
           <input {...this.props} className="TextBox-input" ref="input" key="input" />}

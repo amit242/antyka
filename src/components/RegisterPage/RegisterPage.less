@@ -4,9 +4,22 @@
 
 .RegisterPage {
     .content-margin;
-  &-container {
-    margin: 0 auto;
-    padding: 0 0 40px;
-    max-width: @max-content-width;
-  }
+    &-container {
+        margin: 0 auto;
+        padding: 0 0 40px;
+        max-width: @max-content-width;
+
+        &-traditional, &-social {
+            float:left;
+            width: 48%;
+            overflow: hidden;
+        }
+        
+    }
+    &-spacer {
+        color: rgba(255, 255, 255, .3);
+    }
+    &-textbox {
+        width: 100px;
+    }
 }
