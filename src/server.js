@@ -6,23 +6,53 @@ import fs from 'fs';
 import path from 'path';
 import express from 'express';
 import React from 'react';
+import mongoose from 'mongoose';
+//import jwt from 'jsonwebtoken';
 //import './core/Dispatcher';
 //import './stores/AppStore';
 import db from './core/Database';
 import App from './components/App';
 import ClientDetection from './utils/ClientDetection';
+import dbConfig from './database/config';
+import userModel from './models/user';
+
 
 const server = express();
 
 server.set('port', (process.env.PORT || 5000));
-console.log(server.get('port'));
 server.use(express.static(path.join(__dirname, 'public')));
 
+// db token seed
+server.set('superSecret', dbConfig.secret); // secret variable
+// db connection
+mongoose.connect(dbConfig.database);
+let mongoDB = mongoose.connection;
+mongoDB.on('error', console.error.bind(console, 'connection error:'));
+mongoDB.once('open', function callback(){
+    console.log('CONNECTED');
+});
+console.log('superSecret:', server.get('superSecret'));
 //
 // Register API middleware
 // -----------------------------------------------------------------------------
 server.use('/api/query', require('./api/query'));
-
+let apiRoutes = express.Router();
+console.log('apiRoutes:', apiRoutes);
+apiRoutes.get('/', function(req, res) {
+  res.json({ message: 'Welcome to the coolest API on earth!' });
+});
+apiRoutes.get('/users', function(req, res) {
+  console.log('get users called');
+  
+  userModel.find({}).exec(function(err, users) {
+    if(err) {
+      console.log('user mongoDB error:', err);
+    }
+    console.log('getting users', users);
+    res.json(users);
+  });
+});
+server.use('/api', apiRoutes);
 //
 // Register server-side rendering middleware
 // -----------------------------------------------------------------------------
