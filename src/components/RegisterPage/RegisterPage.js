@@ -22,8 +22,8 @@ class RegisterPage {
           <span>
             <div className="RegisterPage-container-traditional">
               <TextBox className="RegisterPage-textbox" ref="name" type="text" placeholder="Name" />
-              <TextBox className="RegisterPage-textbox" ref="email" type="text" placeholder="email id" textboxLabel="Email" />
-              <TextBox className="RegisterPage-textbox" ref="address" type="text" placeholder="address" textboxLabel="Address" maxLines={3} />
+              <TextBox className="RegisterPage-textbox" ref="email" type="text" placeholder="email id" />
+              <TextBox className="RegisterPage-textbox" ref="address" type="text" placeholder="address" maxLines={3} />
             </div>
             <span className="RegisterPage-spacer">Or</span>
             <div className="RegisterPage-container-social">

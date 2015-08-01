@@ -5,6 +5,8 @@ import styles from './Login.less';
 import withStyles from '../../decorators/withStyles';
 import TextBox from '../TextBox';
 import Link from '../../utils/Link';
+import AppActions from '../../actions/AppActions';
+import AuthService from '../../auth/AuthService';
 
 @withStyles(styles)
 export default class Login extends React.Component {
@@ -17,7 +19,8 @@ export default class Login extends React.Component {
 
     this.state = {
       userId: '',
-      password: ''
+      password: '',
+      loginError: false
     };
   }
 
@@ -25,12 +28,12 @@ export default class Login extends React.Component {
     console.log('componentDidMount', this);
   }
 
-  userNameChanged() {
-    this.setState({userId: React.findDOMNode(this.refs.userId).value});
+  userNameChanged(event) {
+    this.setState({userId: event.target.value});
   }
 
-  passwordChanged() {
-    this.setState({password: React.findDOMNode(this.refs.password).value});
+  passwordChanged(event) {
+    this.setState({password: event.target.value});
   }
 
   authenticate() {
@@ -43,10 +46,10 @@ export default class Login extends React.Component {
     let title = 'Login';
     this.context.onSetTitle(title);
     return (
-      <div className="Login">
         <div className="Login-container">
           <TextBox className="Login-TextBox" ref="userId" value={this.userId} type="text" placeholder="Email" onChange={this.userNameChanged.bind(this)} />
           <TextBox className="Login-TextBox" ref="password" value={this.password} type="password" placeholder="Password" onChange={this.passwordChanged.bind(this)} />
+          {this.state.loginError && (<p>Invalid userId/password</p>)}
           <div className="Login-helper">
             <label><input type="checkbox" ref="rememberme" /><span>Remember me</span></label>
             <a className="Login-helper-forgot" href="/account/reset_password">Forgot password?</a>
@@ -55,7 +58,6 @@ export default class Login extends React.Component {
           <div className="Login-spacer">or</div>
           <a className="Login-link Login-link--highlight" href="/register" onClick={Link.handleClick}>Sign up</a>
         </div>
-      </div>
     );
   }
 

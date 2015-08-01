@@ -9,13 +9,13 @@ import AppStore from '../../stores/AppStore';
 import Header from '../Header';
 import ContentPage from '../ContentPage';
 import ContactPage from '../ContactPage';
-import Login from '../Login';
+import LoginPage from '../LoginPage';
 import RegisterPage from '../RegisterPage';
 import NotFoundPage from '../NotFoundPage';
 import Feedback from '../Feedback';
 import Footer from '../Footer';
 
-const pages = { ContentPage, ContactPage, Login, RegisterPage, NotFoundPage };
+const pages = { ContentPage, ContactPage, LoginPage, RegisterPage, NotFoundPage };
 
 @withContext
 @withStyles(styles)
@@ -54,7 +54,7 @@ export default class App {
         break;
       case '/':
       case '/login':
-        component = <Login />;
+        component = <LoginPage />;
         break;
     }
 
