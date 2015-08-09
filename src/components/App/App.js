@@ -6,7 +6,9 @@ import withContext from '../../decorators/withContext';
 import withStyles from '../../decorators/withStyles';
 import AppActions from '../../actions/AppActions';
 import AppStore from '../../stores/AppStore';
+import LoginStore from '../../stores/LoginStore';
 import Header from '../Header';
+import UserHomePage from '../UserHomePage';
 import ContentPage from '../ContentPage';
 import ContactPage from '../ContactPage';
 import LoginPage from '../LoginPage';
@@ -37,14 +39,15 @@ export default class App {
     return this.props.path !== nextProps.path;
   }
 
+
   render() {
     let component;
-    console.log('APP render', this.props.isMobile);
+    console.log('appjs render', this.props.isMobile, this.props.path);
     switch (this.props.path) {
       case '/about':
       case '/privacy':
-        let page = AppStore.getPage(this.props.path);
-        component = React.createElement(pages[page.component], page);
+        //let page = AppStore.getPage(this.props.path);
+        //component = React.createElement(pages[page.component], page);
         break;
       case '/register':
         component = <RegisterPage />;
@@ -53,11 +56,18 @@ export default class App {
         component = <ContactPage />;
         break;
       case '/':
+        component = <UserHomePage />;
+        break;
       case '/login':
         component = <LoginPage />;
         break;
     }
 
+    console.log('AMIT Appjs render: Is logged in: ', LoginStore.isLoggedIn());
+    if(component.type.willTransitionTo) {
+      console.log('AMIT Appjs render:', component.type.willTransitionTo());
+
+    }
     return component ? (
       <div>
         <Header />

@@ -1,7 +1,7 @@
 /*! React Starter Kit | MIT License | http://www.reactstarterkit.com/ */
 
-import EventEmitter from 'eventemitter3';
-import Dispatcher from '../core/Dispatcher';
+import EventEmitter from 'events';
+import Dispatcher from '../dispatchers/Dispatcher';
 import ActionTypes from '../constants/ActionTypes';
 
 const CHANGE_EVENT = 'change';

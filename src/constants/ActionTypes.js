@@ -5,5 +5,7 @@ import keyMirror from 'react/lib/keyMirror';
 export default keyMirror({
   GET_PAGE: null,
   RECEIVE_PAGE: null,
-  CHANGE_LOCATION: null
+  CHANGE_LOCATION: null,
+  LOGIN_USER: null,
+  LOGOUT_USER: null
 });

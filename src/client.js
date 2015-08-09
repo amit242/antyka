@@ -4,7 +4,7 @@ import 'babel/polyfill';
 import React from 'react';
 import FastClick from 'fastclick';
 import App from './components/App';
-import Dispatcher from './core/Dispatcher';
+import Dispatcher from './dispatchers/Dispatcher';
 import AppActions from './actions/AppActions';
 import ActionTypes from './constants/ActionTypes';
 import ClientDetection from './utils/ClientDetection';
@@ -27,6 +27,7 @@ let onSetMeta = (name, content) => {
 };
 
 function run() {
+  console.log('Clientjs run...');
   // Render the top-level React component
   let isMobile = ClientDetection.isMobile(navigator.userAgent);
 

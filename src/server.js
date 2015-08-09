@@ -9,7 +9,7 @@ import React from 'react';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import jwt from 'jsonwebtoken';
-//import './core/Dispatcher';
+//import './dispatchers/Dispatcher';
 //import './stores/AppStore';
 import db from './core/Database';
 import App from './components/App';
@@ -58,7 +58,7 @@ apiRoutes.post('/authenticate', function(req, res) {
   console.log('authenticate:', req.body);
 
   userModel.findOne({
-    userid: req.body.userid
+    userid: userid
   }, function(err, user) {
 
     if (err) {
@@ -69,7 +69,7 @@ apiRoutes.post('/authenticate', function(req, res) {
       res.json({ success: false, message: 'Authentication failed. User not found.' });
     } else if (user) {
       // check if password matches
-      if (user.password !== req.body.password) {
+      if (user.password !== password) {
         res.json({ success: false, message: 'Authentication failed. Wrong password.' });
       } else {
         // if user is found and password is right
@@ -83,13 +83,13 @@ apiRoutes.post('/authenticate', function(req, res) {
           expires: expires
         };
         let token = jwt.sign(signObj, server.get('superSecret'), {
-          expiresInMinutes: minExpire 
+          expiresInMinutes: minExpire
         });
 
         // return the information including token as JSON
         res.json({
           success: true,
-          message: 'Enjoy your token!',
+          message: 'Login Success!',
           token: token,
           expires: expires
         });
@@ -159,7 +159,7 @@ const template = _.template(fs.readFileSync(templateFile, 'utf8'));
 server.get('*', async (req, res, next) => {
   try {
     let isMobile = ClientDetection.isMobile(req.headers['user-agent']);
-    console.log('AMIT: isMobile:', isMobile);
+    console.log('Serverjs AMIT: isMobile:', isMobile);
     // TODO: Temporary fix #159
     if (['/about', '/privacy'].indexOf(req.path) !== -1) {
       await db.getPage(req.path);

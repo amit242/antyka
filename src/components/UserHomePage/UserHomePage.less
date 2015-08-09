@@ -1,0 +1,88 @@
+/* React Starter Kit | MIT License | http://www.reactstarterkit.com/ */
+
+@import '../variables.less';
+
+.UserHomePage {
+    float: right;
+    padding: 50px 0;
+    margin-right: 15%;
+    .content-margin;
+    input {
+    	color: black;
+    }
+    &-spacer {
+        line-height: 40px;
+        text-align: center;
+        vertical-align: middle;
+        color: #bbb;
+    }
+    &-helper {
+    	color: #ddd;
+        padding: 10px;
+        font-size: 12px;
+        
+        input {
+            vertical-align: bottom;
+        }
+        
+        &-forgot {
+            float: right;
+            color: #ddd;
+        }
+    }
+    input[type=button] {
+        color: black;
+        border: none;
+        font-size: 1.125em;
+        padding: 3px 8px;
+        margin-left: 5%;
+        width: 90%;
+        background: rgba(255, 255, 255, .5);
+        &:hover {
+            background: rgba(255, 255, 255, .8);
+        }
+    }
+    &-container {
+        padding: 10px;
+        padding-bottom: 20px;
+        max-width: @max-content-width;
+        background-color: #789;
+    }
+
+    &-link {
+        margin-left: 5%;
+        width: 85%;
+        display: inline-block;
+        padding: 3px 8px;
+        text-decoration: none;
+        text-align: center;
+        color: white;
+        font-size: 1.125em; // ~18px
+        &div {
+            margin-left: 80%;
+        }
+
+        &,
+        &:active,
+        &:visited {
+            color: rgba(0, 0, 0, .6);
+        }
+
+        &:hover {
+            color: rgba(0, 0, 0, 1);
+        }
+
+        &--highlight {
+            //margin-right: 8px;
+            //margin-left: 8px;
+            //border-radius: 3px;
+            background: rgba(255, 255, 255, .5);
+            color: #fff;
+
+            &:hover {
+                background: rgba(255, 255, 255, .8);
+            }
+        }
+    }
+
+}

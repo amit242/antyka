@@ -79,7 +79,7 @@ gulp.task('bundle', cb => {
     if (err) {
       throw new $.util.PluginError('webpack', err);
     }
-/*
+
     console.log(stats.toString({
       colors: $.util.colors.supportsColor,
       hash: verbose,
@@ -89,7 +89,7 @@ gulp.task('bundle', cb => {
       chunkModules: verbose,
       cached: verbose,
       cachedAssets: verbose
-    }));*/
+    }));
     if (++bundlerRunCount === (watch ? config.length : 1)) {
       return cb();
     }

@@ -4,9 +4,9 @@ import React, { PropTypes } from 'react';
 import styles from './LoginPage.less';
 import withStyles from '../../decorators/withStyles';
 import Login from '../Login';
-import Link from '../../utils/Link';
-import AppActions from '../../actions/AppActions';
-import AuthService from '../../auth/AuthService';
+// import Link from '../../utils/Link';
+// import AppActions from '../../actions/AppActions';
+// import AuthService from '../../auth/AuthService';
 
 @withStyles(styles)
 export default class LoginPage {

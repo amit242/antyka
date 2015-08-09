@@ -5,8 +5,8 @@ import styles from './Login.less';
 import withStyles from '../../decorators/withStyles';
 import TextBox from '../TextBox';
 import Link from '../../utils/Link';
-import AppActions from '../../actions/AppActions';
-import AuthService from '../../auth/AuthService';
+//import AppActions from '../../actions/AppActions';
+import AuthService from '../../services/AuthService';
 
 @withStyles(styles)
 export default class Login extends React.Component {
@@ -37,8 +37,11 @@ export default class Login extends React.Component {
   }
 
   authenticate() {
-    console.log('DOM nodes', React.findDOMNode(this.refs.userId).value, React.findDOMNode(this.refs.password).value);
     console.log('this.state =', this.state);
+    AuthService.login(this.state.userId, this.state.password);
+    //   .catch(function(err) {
+    //     console.log('Error logging in', err);
+    //   });
   }
 
   render() {
