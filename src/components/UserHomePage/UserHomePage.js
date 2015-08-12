@@ -8,8 +8,8 @@ import withAuthentication from '../../decorators/withAuthentication';
 // import AuthService from '../../auth/AuthService';
 
 @withStyles(styles)
-@withAuthentication
-export default class UserHomePage extends React.Component {
+//@withAuthentication
+class UserHomePage extends React.Component {
   static contextTypes = {
     onSetTitle: PropTypes.func.isRequired,
     onPageNotFound: PropTypes.func.isRequired
@@ -24,3 +24,5 @@ export default class UserHomePage extends React.Component {
     );
   }
 }
+
+export default withAuthentication(UserHomePage);
