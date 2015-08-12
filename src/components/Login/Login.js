@@ -25,7 +25,7 @@ export default class Login extends React.Component {
   }
 
   componentDidMount() {
-    console.log('componentDidMount', this);
+    //console.log('componentDidMount', this);
   }
 
   userNameChanged(event) {
@@ -37,8 +37,10 @@ export default class Login extends React.Component {
   }
 
   authenticate() {
-    console.log('this.state =', this.state);
-    AuthService.login(this.state.userId, this.state.password);
+    //console.log('this.state =', this.state);
+    AuthService.login(this.state.userId, this.state.password, () => {
+      this.setState({loginError: true});
+    });
     //   .catch(function(err) {
     //     console.log('Error logging in', err);
     //   });
@@ -50,14 +52,16 @@ export default class Login extends React.Component {
     this.context.onSetTitle(title);
     return (
         <div className="Login-container">
-          <TextBox className="Login-TextBox" ref="userId" value={this.userId} type="text" placeholder="Email" onChange={this.userNameChanged.bind(this)} />
-          <TextBox className="Login-TextBox" ref="password" value={this.password} type="password" placeholder="Password" onChange={this.passwordChanged.bind(this)} />
-          {this.state.loginError && (<p>Invalid userId/password</p>)}
-          <div className="Login-helper">
-            <label><input type="checkbox" ref="rememberme" /><span>Remember me</span></label>
-            <a className="Login-helper-forgot" href="/account/reset_password">Forgot password?</a>
-          </div>
-          <input type="button" onClick={this.authenticate.bind(this)} value="Log in" />
+          <form>
+            <TextBox className="Login-TextBox" ref="userId" value={this.userId} type="text" placeholder="Email" onChange={this.userNameChanged.bind(this)} />
+            <TextBox className="Login-TextBox" ref="password" value={this.password} type="password" placeholder="Password" onChange={this.passwordChanged.bind(this)} />
+            {this.state.loginError && (<span className="Login-error">Invalid userId/password</span>)}
+            <div className="Login-helper">
+              <label><input type="checkbox" ref="rememberme" /><span>Remember me</span></label>
+              <a className="Login-helper-forgot" href="/account/reset_password">Forgot password?</a>
+            </div>
+            <input type="submit" onClick={this.authenticate.bind(this)} value="Log in" />
+          </form>
           <div className="Login-spacer">or</div>
           <a className="Login-link Login-link--highlight" href="/register" onClick={Link.handleClick}>Sign up</a>
         </div>

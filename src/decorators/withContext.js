@@ -23,6 +23,7 @@ function withContext(ComposedComponent) {
     };
 
     getChildContext() {
+      
       let context = this.props.context;
       return {
         onInsertCss: context.onInsertCss || emptyFunction,

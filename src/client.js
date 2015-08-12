@@ -1,61 +1,50 @@
-/*! React Starter Kit | MIT License | http://www.reactstarterkit.com/ */
-
-import 'babel/polyfill';
 import React from 'react';
-import FastClick from 'fastclick';
+import Router, {Route} from 'react-router';
 import App from './components/App';
-import Dispatcher from './dispatchers/Dispatcher';
+import appRoutes from './routes/Routes';
+import RouterContainer from './services/RouterContainer';
+import LoginAction from './actions/LoginAction';
+import ClientDetection from './utils/ClientDetection';
+// import LoginPage from './components/LoginPage';
+// import HomePage from './components/UserHomePage';
+// import RegisterPage from './components/RegisterPage';
 import AppActions from './actions/AppActions';
 import ActionTypes from './constants/ActionTypes';
-import ClientDetection from './utils/ClientDetection';
+import FastClick from 'fastclick';
+
+/*var appRoutes = (
+  <Route handler={App}>
+      <Route name="login" handler={LoginPage}/>
+      <Route name="home" path="/" handler={HomePage}/>
+      <Route name="register" handler={RegisterPage}/>
+    </Route>
+);*/
 
 let path = decodeURI(window.location.pathname);
-console.log('AMIT: Path:', path);
-let onSetMeta = (name, content) => {
-  // Remove and create a new <meta /> tag in order to make it work
-  // with bookmarks in Safari
-  let elements = document.getElementsByTagName('meta');
-  [].slice.call(elements).forEach((element) => {
-    if (element.getAttribute('name') === name) {
-      element.parentNode.removeChild(element);
-    }
-  });
-  let meta = document.createElement('meta');
-  meta.setAttribute('name', name);
-  meta.setAttribute('content', content);
-  document.getElementsByTagName('head')[0].appendChild(meta);
-};
-
 function run() {
-  console.log('Clientjs run...');
-  // Render the top-level React component
-  let isMobile = ClientDetection.isMobile(navigator.userAgent);
+  var router = Router.create({routes: appRoutes});
+  RouterContainer.set(router);
 
-  let props = {
-    path: path,
-    isMobile: {isMobile},
-    context: {
-      onSetTitle: value => {document.title = value; },
-      onSetMeta
-    }
-  };
-  let element = React.createElement(App, props);
-  React.render(element, document.getElementById('app'), () => {
-    let css = document.getElementById('css');
-    css.parentNode.removeChild(css);
-  });
+  let jwt = localStorage.getItem('closyaar-jwt');
+  console.log('appRoutessss:jwt:',jwt);
+  if (jwt) {
+    LoginAction.loginUser(jwt);
+  }
 
-  // Update `Application.path` prop when `window.location` is changed
-  Dispatcher.register((action) => {
-    if (action.type === ActionTypes.CHANGE_LOCATION) {
-      element = React.cloneElement(element, {path: action.path});
-      React.render(element, document.getElementById('app'));
-    }
+  router.run(function (Handler) {
+    let isMobile = ClientDetection.isMobile(navigator.userAgent);
+
+    let props = {
+      isMobile: {isMobile},
+      context: {
+        onSetTitle: value => {document.title = value; }
+      }
+    };
+    console.log('Amit App.jsx:', Handler);
+    React.render(<Handler { ...props } />, document.getElementById('app'));
   });
 }
 
-// Run the application when both DOM is ready
-// and page content is loaded
 Promise.all([
   new Promise((resolve) => {
     if (window.addEventListener) {
@@ -66,3 +55,4 @@ Promise.all([
   }).then(() => FastClick.attach(document.body)),
   new Promise((resolve) => AppActions.loadPage(path, resolve))
 ]).then(run);
+

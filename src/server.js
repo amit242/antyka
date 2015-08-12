@@ -16,7 +16,11 @@ import App from './components/App';
 import ClientDetection from './utils/ClientDetection';
 import dbConfig from './database/config';
 import userModel from './models/user';
-
+import Router, {Route} from 'react-router';
+import appRoutes from './routes/Routes';
+import LoginPage from './components/LoginPage';
+import RegisterPage from './components/RegisterPage';
+import HomePage from './components/UserHomePage';
 
 const server = express();
 
@@ -35,9 +39,9 @@ mongoose.connect(dbConfig.database);
 let mongoDB = mongoose.connection;
 mongoDB.on('error', console.error.bind(console, 'connection error:'));
 mongoDB.once('open', function callback(){
-  console.log('CONNECTED');
+  // console.log('MONGODB CONNECTED');
 });
-console.log('superSecret:', server.get('superSecret'));
+// console.log('superSecret:', server.get('superSecret'));
 //
 // Register API middleware
 // -----------------------------------------------------------------------------
@@ -47,7 +51,7 @@ server.use('/api/query', require('./api/query'));
 // -----------------------------------------------------------------------------
 // TODO: refactor and move to a module/class
 let apiRoutes = express.Router();
-console.log('apiRoutes:', apiRoutes);
+// console.log('apiRoutes:', apiRoutes);
 apiRoutes.get('/', function(req, res) {
   res.json({ message: 'Welcome to the coolest API on earth!' });
 });
@@ -55,7 +59,7 @@ apiRoutes.get('/', function(req, res) {
 apiRoutes.post('/authenticate', function(req, res) {
   let userid = req.body.userid;
   let password = req.body.password;
-  console.log('authenticate:', req.body);
+  // console.log('authenticate:', req.body);
 
   userModel.findOne({
     userid: userid
@@ -72,33 +76,35 @@ apiRoutes.post('/authenticate', function(req, res) {
       if (user.password !== password) {
         res.json({ success: false, message: 'Authentication failed. Wrong password.' });
       } else {
+        console.log('Login Success for user:', user.name);
         // if user is found and password is right
         // create a token
         let minExpire = 10; // expires in 10 min
-        let expires = expiresInMinutes(minExpire);
+        let expires = expiresInMins(minExpire);
 
         let signObj = {
           user: user.userid,
           id: user._id,
-          expires: expires
+          expires: expires // this acts a token differentiator
         };
         let token = jwt.sign(signObj, server.get('superSecret'), {
-          expiresInMinutes: minExpire
+          //expiresInMinutes: minExpire //never expires
         });
 
         // return the information including token as JSON
         res.json({
           success: true,
           message: 'Login Success!',
-          token: token,
-          expires: expires
+          name: user.name,
+          //expires: expires,
+          token: token
         });
       }
     }
   });
 });
 
-function expiresInMinutes(minutes) {
+function expiresInMins(minutes) {
   let d1 = new Date();
   return new Date(d1.getTime() + minutes*60000);
 }
@@ -118,7 +124,7 @@ apiRoutes.use(function(req, res, next) {
         return res.status(403).json({ success: false, message: 'Failed to authenticate token.' });
       } else {
         // if everything is good, save to request for use in other routes
-        console.log('Auth Success decoded:', decoded);
+        // console.log('Auth Success decoded:', decoded);
         req.decoded = decoded;
         next();
       }
@@ -136,13 +142,13 @@ apiRoutes.use(function(req, res, next) {
 });
 
 apiRoutes.get('/users', function(req, res) {
-  console.log('get users called');
+  // console.log('get users called');
 
   userModel.find({}).exec(function(err, users) {
     if(err) {
-      console.log('user mongoDB error:', err);
+      // console.log('user mongoDB error:', err);
     }
-    console.log('getting users', users);
+    // console.log('getting users', users);
     res.json(users);
   });
 });
@@ -159,7 +165,7 @@ const template = _.template(fs.readFileSync(templateFile, 'utf8'));
 server.get('*', async (req, res, next) => {
   try {
     let isMobile = ClientDetection.isMobile(req.headers['user-agent']);
-    console.log('Serverjs AMIT: isMobile:', isMobile);
+    // console.log('Serverjs AMIT: isMobile:', isMobile);
     // TODO: Temporary fix #159
     if (['/about', '/privacy'].indexOf(req.path) !== -1) {
       await db.getPage(req.path);
@@ -167,24 +173,81 @@ server.get('*', async (req, res, next) => {
     let notFound = false;
     let css = [];
     let data = {description: ''};
+    /*
     let app = (<App
       path={req.path}
       isMobile={isMobile}
       context={{
         onInsertCss: value => css.push(value),
-        onSetTitle: value => {data.title = value; console.log('AMIT: title value:', value); },
+        onSetTitle: value => {data.title = value; },
         onSetMeta: (key, value) => data[key] = value,
         onPageNotFound: () => notFound = true
       }} />);
+
     data.body = React.renderToString(app);
     data.css = css.join('');
+    
     let html = template(data);
     if (notFound) {
       res.status(404);
     }
-    res.send(html);
+    res.send(html);*/
+    /*
+    var appRoutes = (
+      <Route path="/" handler={App}>
+          <Route name="login" handler={LoginPage}/>
+          <Route name="register" handler={RegisterPage}/>
+          <Route name="home" handler={HomePage}/>
+      </Route>
+    );*/
+console.log('-----------AMIT----------- url:', req.url);
+    var router = Router.create({
+      location: req.url,
+      routes: appRoutes,
+      onAbort: function (abortReason) {
+        console.log('router onAbort:', abortReason);
+        if (abortReason.constructor.name === 'Redirect') {
+          console.log('router onAbort : instance of redirect:');
+          
+          let url = this.makePath(abortReason.to, abortReason.params, abortReason.query);
+
+          console.log('router onAbort :url:', this.location, '=========requrl:', req.url);
+          res.redirect(url);
+          
+        } else {
+          console.log('router onAbort: WHATATT!!!', this.path);
+          if(abortReason.reason === 'NOTLOGGED') {
+            let url = this.makePath('login');
+            res.redirect(url);
+          }
+        }
+        
+      },
+      onError: function (err) {
+        console.log('Routing Error:', err, arguments);
+      }
+    });
+
+    console.log('router created:');
+    router.run(function(Handler, state) {
+      console.log('router running:');
+      
+      data.body = React.renderToString(<Handler context={{
+        onInsertCss: value => css.push(value),
+        onSetTitle: value => {data.title = value; },
+        onSetMeta: (key, value) => data[key] = value,
+        onPageNotFound: () => notFound = true
+      }} />);
+      data.css = css.join('');
+      let html = template(data);
+      if (notFound) {
+        res.status(404);
+      }
+      res.send(html);
+    });
+
   } catch (err) {
-    console.log('AMIT: server exception:', err);
+    // console.log('AMIT: server exception:', err);
     next(err);
   }
 });
@@ -194,11 +257,11 @@ server.get('*', async (req, res, next) => {
 // -----------------------------------------------------------------------------
 
 server.listen(server.get('port'), () => {
-  console.log('AMIT: Listening to port:', server.get('port'));
+  // console.log('AMIT: Listening to port:', server.get('port'));
   if (process.send) {
-    console.log('AMIT: going online');
+    // console.log('AMIT: going online');
     process.send('online');
   } else {
-    console.log('The server is running at http://localhost:' + server.get('port'));
+    // console.log('The server is running at http://localhost:' + server.get('port'));
   }
 });

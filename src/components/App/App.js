@@ -1,86 +1,66 @@
-/*! React Starter Kit | MIT License | http://www.reactstarterkit.com/ */
-
 import React, { PropTypes } from 'react';
+import { Route, RouteHandler } from 'react-router';
+import LoginStore from '../../stores/LoginStore'
+import AuthService from '../../services/AuthService';
 import styles from './App.less';
-import withContext from '../../decorators/withContext';
 import withStyles from '../../decorators/withStyles';
-import AppActions from '../../actions/AppActions';
-import AppStore from '../../stores/AppStore';
-import LoginStore from '../../stores/LoginStore';
+import withContext from '../../decorators/withContext';
 import Header from '../Header';
-import UserHomePage from '../UserHomePage';
-import ContentPage from '../ContentPage';
-import ContactPage from '../ContactPage';
-import LoginPage from '../LoginPage';
-import RegisterPage from '../RegisterPage';
-import NotFoundPage from '../NotFoundPage';
 import Feedback from '../Feedback';
 import Footer from '../Footer';
+import { canUseDOM } from 'react/lib/ExecutionEnvironment';
 
-const pages = { ContentPage, ContactPage, LoginPage, RegisterPage, NotFoundPage };
 
 @withContext
 @withStyles(styles)
-export default class App {
-
-  static propTypes = {
-    path: PropTypes.string.isRequired
+export default class App extends React.Component {
+  static contextTypes = {
+    onSetTitle: PropTypes.func.isRequired
   };
+  // static propTypes = {
+  //   path: PropTypes.string.isRequired
+  // };
+
+  constructor() {
+    console.log('===>App constructor:');    
+    super()
+    this.state = this._getLoginState();
+  }
+
+  _getLoginState() {
+    return {
+      userLoggedIn: LoginStore.isLoggedIn()
+    };
+  }
 
   componentDidMount() {
-    window.addEventListener('popstate', this.handlePopState);
+    this.changeListener = this._onChange.bind(this);
+    LoginStore.addChangeListener(this.changeListener);
+  }
+
+  _onChange() {
+    this.setState(this._getLoginState());
   }
 
   componentWillUnmount() {
-    window.removeEventListener('popstate', this.handlePopState);
-  }
-
-  shouldComponentUpdate(nextProps) {
-    return this.props.path !== nextProps.path;
+    LoginStore.removeChangeListener(this.changeListener);
   }
 
 
   render() {
-    let component;
-    console.log('appjs render', this.props.isMobile, this.props.path);
-    switch (this.props.path) {
-      case '/about':
-      case '/privacy':
-        //let page = AppStore.getPage(this.props.path);
-        //component = React.createElement(pages[page.component], page);
-        break;
-      case '/register':
-        component = <RegisterPage />;
-        break;
-      case '/contact':
-        component = <ContactPage />;
-        break;
-      case '/':
-        component = <UserHomePage />;
-        break;
-      case '/login':
-        component = <LoginPage />;
-        break;
-    }
+    console.log('App Render client?:', canUseDOM, RouteHandler);
+    console.log('App Render :', this.context);
 
-    console.log('AMIT Appjs render: Is logged in: ', LoginStore.isLoggedIn());
-    if(component.type.willTransitionTo) {
-      console.log('AMIT Appjs render:', component.type.willTransitionTo());
+    this.context.onSetTitle('Closyaar');
 
-    }
-    return component ? (
+    return (
       <div>
-        <Header />
-        {component}
+        <Header isLoggedIn={this._getLoginState()}/>
+        <RouteHandler />
         <Feedback />
         <Footer />
-      </div>) : <NotFoundPage />;
+      </div>);
   }
-
-  handlePopState(event) {
-    AppActions.navigateTo(window.location.pathname, {replace: !!event.state});
-  }
-
 }
 
 //export default App;

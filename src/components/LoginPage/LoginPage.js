@@ -10,6 +10,9 @@ import Login from '../Login';
 
 @withStyles(styles)
 export default class LoginPage {
+  static willTransitionTo(transition) {
+      console.log('Amit LOGING STATIC willTransitionTo:');
+    }
   static contextTypes = {
     onSetTitle: PropTypes.func.isRequired
   };

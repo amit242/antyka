@@ -5,7 +5,7 @@ export default class BaseStore extends EventEmitter {
 
   constructor() {
     super();
-    console.log('BaseStore constructor');
+    // console.log('BaseStore constructor');
   }
 
   subscribe(actionSubscribe) {

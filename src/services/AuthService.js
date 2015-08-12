@@ -2,7 +2,7 @@ import http from 'superagent';
 import LoginActions from '../actions/LoginAction';
 class AuthService {
 
-  login(username, password) {
+  login(username, password, errorCb) {
     console.log('AMIT Trying login with', username, password);
 
 
@@ -20,8 +20,11 @@ class AuthService {
         // We get a JWT back.
         let jwt = response.body.token;
         // We trigger the LoginAction with that JWT.
-        LoginActions.loginUser(username, jwt);
+        LoginActions.loginUser(jwt);
         return true;
+      } else {
+        console.log('Authentication Fail!!!');
+        errorCb();
       }
     });
     // We call the server to log the user in.
@@ -44,6 +47,10 @@ class AuthService {
         LoginActions.loginUser(jwt);
         return true;
     });*/
+  }
+
+  logout() {
+    LoginActions.logoutUser();
   }
 }
 

@@ -8,17 +8,17 @@ class LoginStore extends BaseStore {
   constructor() {
 
     super();
-    console.log('LoginStore constructor');
+    //console.log('LoginStore constructor');
     this.subscribe(() => this._registerToActions.bind(this));
     this._user = null;
     this._jwt = null;
   }
 
   _registerToActions(action) {
-    console.log('AMIT LOGINSTORE:', action);
+    //console.log('AMIT LOGINSTORE:', action);
     switch(action.type) {
       case ActionTypes.LOGIN_USER:
-        console.log('AMIT LOGINSTORE: emitchange with jwt', action.jwt);
+        //console.log('AMIT LOGINSTORE: emitchange with jwt', action.jwt);
         this._jwt = action.jwt;
         this._user = 'XXXXX';
         //this._user = jwt_decode(this._jwt);

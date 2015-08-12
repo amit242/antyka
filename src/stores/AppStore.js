@@ -56,8 +56,8 @@ var AppStore = Object.assign({}, EventEmitter.prototype, {
 
 AppStore.dispatchToken = Dispatcher.register((action) => {
 
-  //console.log('AppStore.dispatchToken:', action.type, action.page);
-  console.log('AppStore.dispatchToken:', action.type);
+  //// console.log('AppStore.dispatchToken:', action.type, action.page);
+  // console.log('AppStore.dispatchToken:', action.type);
   switch (action.type) {
 
     case ActionTypes.GET_PAGE:
