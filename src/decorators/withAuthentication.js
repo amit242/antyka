@@ -3,7 +3,7 @@ import LoginStore from '../stores/LoginStore';
 import AppActions from '../actions/AppActions';
 import { canUseDOM } from 'react/lib/ExecutionEnvironment';
 
-export default (ComposedComponent) => {
+function withAuthentication(ComposedComponent) {
   return class withAuthentication extends React.Component {
 
     // This method is called before transitioning to this component. If the user is not logged in, we’ll send him or her
@@ -17,12 +17,13 @@ export default (ComposedComponent) => {
       }
     }*/
     static willTransitionTo(transition) {
-      console.log('Amit willTransitionTo| check user:', LoginStore.isLoggedIn());
-      console.log('Amit willTransitionTo| transition:', transition);
-      console.log('Amit willTransitionTo| canUseDOM:', canUseDOM);
+      console.log('withAuthentication.willTransitionTo()| userLoggedin?:', LoginStore.isLoggedIn());
+      console.log('withAuthentication.willTransitionTo()| transition:', transition);
+      console.log('withAuthentication.willTransitionTo()| canUseDOM:', canUseDOM);
       if (!LoginStore.isLoggedIn()) {
-        //if(canUseDOM)
-          transition.redirect('login', {}, '');
+        if(!canUseDOM)
+          console.log('withAuthentication.willTransitionTo()| user not logged in transitioning to path:', transition.path);
+          //transition.redirect('login', {}, transition.path);
       }
     }
     constructor() {
@@ -65,4 +66,6 @@ export default (ComposedComponent) => {
       //}
     }
   };
-};
+}
+
+export default withAuthentication;

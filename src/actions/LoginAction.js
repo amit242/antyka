@@ -4,11 +4,10 @@ import RouterContainer from '../services/RouterContainer';
 
 let jwtKey = 'closyaar-jwt';
 export default {
-  
-
   loginUser: (jwt) => {
-    
+    console.log('LoginAction.loginUser()| supplied jwt:', jwt);
     let savedJwt = localStorage.getItem(jwtKey);
+    console.log('LoginAction.loginUser()| savedJwt:', savedJwt);
     if(savedJwt !== jwt) {
       var nextPath = RouterContainer.get().getCurrentQuery() && RouterContainer.get().getCurrentQuery().nextPath || '/';
 

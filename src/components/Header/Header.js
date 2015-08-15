@@ -10,7 +10,7 @@ import Navigation from '../Navigation';
 class Header {
 
   render() {
-    console.log('Header render:', this.props);
+    console.log('Header.render()| props:', this.props);
     return (
       <div className="Header">
         <div className="Header-container">

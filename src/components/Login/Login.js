@@ -36,11 +36,14 @@ export default class Login extends React.Component {
     this.setState({password: event.target.value});
   }
 
-  authenticate() {
-    //console.log('this.state =', this.state);
+  authenticate(e) {
+    e.preventDefault();
+    //alert(this.state);
+    console.log('Login.authenticate()| state:', this.state, e);
     AuthService.login(this.state.userId, this.state.password, () => {
       this.setState({loginError: true});
     });
+    //alert(this.state);
     //   .catch(function(err) {
     //     console.log('Error logging in', err);
     //   });
@@ -63,7 +66,7 @@ export default class Login extends React.Component {
             <input type="submit" onClick={this.authenticate.bind(this)} value="Log in" />
           </form>
           <div className="Login-spacer">or</div>
-          <a className="Login-link Login-link--highlight" href="/register" onClick={Link.handleClick}>Sign up</a>
+          <a className="Login-link Login-link-highlight" href="/register" onClick={Link.handleClick}>Sign up</a>
         </div>
     );
   }

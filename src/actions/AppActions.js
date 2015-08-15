@@ -8,6 +8,8 @@ import ActionTypes from '../constants/ActionTypes';
 export default {
 
   navigateTo(path, options) {
+    console.log('AppActions.navigateTo()| path:', path);
+    console.log('AppActions.navigateTo()| options:', options);
     this.loadPage(path, () => {
       if (canUseDOM) {
         if (options && options.replace) {
@@ -25,12 +27,13 @@ export default {
   },
 
   loadPage(path, cb) {
+    console.log('AppActions.loadPage()| path:', path);
     Dispatcher.dispatch({
       type: ActionTypes.GET_PAGE,
       path
     });
 
-    http.get('/api/query?path=' + encodeURI(path))
+    http.get('/routeapi/query?path=' + encodeURI(path))
       .accept('application/json')
       .end((err, res) => {
         Dispatcher.dispatch({
@@ -39,6 +42,7 @@ export default {
           err,
           page: res ? res.body : null
         });
+        
         if (cb) {
           cb();
         }

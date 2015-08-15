@@ -45,7 +45,7 @@ mongoDB.once('open', function callback(){
 //
 // Register API middleware
 // -----------------------------------------------------------------------------
-server.use('/api/query', require('./api/query'));
+server.use('/routeapi/query', require('./routeApi/query'));
 //
 // Register API authentication
 // -----------------------------------------------------------------------------
@@ -76,7 +76,7 @@ apiRoutes.post('/authenticate', function(req, res) {
       if (user.password !== password) {
         res.json({ success: false, message: 'Authentication failed. Wrong password.' });
       } else {
-        console.log('Login Success for user:', user.name);
+        console.log('Server.apiRoutes.post()| Login Success for user:', user.name);
         // if user is found and password is right
         // create a token
         let minExpire = 10; // expires in 10 min
@@ -163,6 +163,9 @@ const templateFile = path.join(__dirname, 'templates/index.html');
 const template = _.template(fs.readFileSync(templateFile, 'utf8'));
 
 server.get('*', async (req, res, next) => {
+  let dt = new Date();
+  console.log('=============================================');
+  console.log('server.server.get()| render start...', dt.getHours() + ':' + dt.getMinutes() + ':' + dt.getSeconds() + ':' +  dt.getMilliseconds());
   try {
     let isMobile = ClientDetection.isMobile(req.headers['user-agent']);
     // console.log('Serverjs AMIT: isMobile:', isMobile);
@@ -200,22 +203,21 @@ server.get('*', async (req, res, next) => {
           <Route name="home" handler={HomePage}/>
       </Route>
     );*/
-console.log('-----------AMIT----------- url:', req.url);
+    console.log('server.server.get()| req.url:', req.url);
     var router = Router.create({
       location: req.url,
       routes: appRoutes,
       onAbort: function (abortReason) {
-        console.log('router onAbort:', abortReason);
+        console.log('server.Router.create().onAbort()| reason:', abortReason);
+        console.log('server.Router.create().onAbort()| instance of ', abortReason.constructor.name);
         if (abortReason.constructor.name === 'Redirect') {
-          console.log('router onAbort : instance of redirect:');
-          
           let url = this.makePath(abortReason.to, abortReason.params, abortReason.query);
 
-          console.log('router onAbort :url:', this.location, '=========requrl:', req.url);
+          console.log('server.Router.create().onAbort()| url: [', url, '] requrl:', req.url);
           res.redirect(url);
           
         } else {
-          console.log('router onAbort: WHATATT!!!', this.path);
+          // TODO: review logic here
           if(abortReason.reason === 'NOTLOGGED') {
             let url = this.makePath('login');
             res.redirect(url);
@@ -224,13 +226,13 @@ console.log('-----------AMIT----------- url:', req.url);
         
       },
       onError: function (err) {
-        console.log('Routing Error:', err, arguments);
+        console.log('server.Router.create().onError()| err, arguments:', err, arguments);
       }
     });
 
-    console.log('router created:');
+    console.log('server.server.get()| router created...');
     router.run(function(Handler, state) {
-      console.log('router running:');
+      console.log('server.Router.run()| router running...');
       
       data.body = React.renderToString(<Handler context={{
         onInsertCss: value => css.push(value),
@@ -244,6 +246,11 @@ console.log('-----------AMIT----------- url:', req.url);
         res.status(404);
       }
       res.send(html);
+      // --------------------
+      let dt = new Date();
+      console.log('server.server.get()| render end...', dt.getHours() + ':' + dt.getMinutes() + ':' + dt.getSeconds() + ':' +  dt.getMilliseconds());
+      console.log('-------------------------------------------------');
+      // --------------------
     });
 
   } catch (err) {

@@ -29,14 +29,16 @@ function withViewport(ComposedComponent) {
     componentDidMount() {
       if (!eventEmitter) {
         eventEmitter = new EventEmitter();
+        eventEmitter.setMaxListeners(1);
         window.addEventListener(RESIZE_EVENT, handleWindowResize);
         window.addEventListener('orientationchange', handleWindowResize);
       }
-      eventEmitter.on(RESIZE_EVENT, this.handleResize, this);
+      // console.log'withViewport componentDidMount:', this);
+      eventEmitter.on(RESIZE_EVENT, this.handleResize.bind(this));
     }
 
     componentWillUnmount() {
-      eventEmitter.removeListener(RESIZE_EVENT, this.handleResize, this);
+      eventEmitter.removeListener(RESIZE_EVENT, this.handleResize.bind(this));
       if (!eventEmitter.listeners(RESIZE_EVENT, true)) {
         window.removeventEmitterventListener(RESIZE_EVENT, handleWindowResize);
         window.removeventEmitterventListener('orientationchange', handleWindowResize);
@@ -45,16 +47,18 @@ function withViewport(ComposedComponent) {
     }
 
     render() {
+      // console.log'withViewport called:',ComposedComponent);
       return <ComposedComponent {...this.props} viewport={this.state.viewport} isSmallViewport={this.state.isSmallViewport} />;
-    }
-    
-    isSmall(width, height) {
-      return width < 400 || height < 300;
     }
 
     handleResize(value) {
-      let isSmall = value.width < 400 || value.height < 300;
-      this.setState({viewport: value, isSmallViewport: isSmall});
+      // console.log'withViewport handleResize:', value, this);
+      this.setState({viewport: value, isSmallViewport: this.isSmall(value.width)});
+    }
+
+    isSmall(width, height) {
+      // console.log'isSmall called', width, 'X',height);
+      return width < 400 || height < 300;
     }
   };
 }

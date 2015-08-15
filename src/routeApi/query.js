@@ -8,13 +8,13 @@ const router = new Router();
 router.get('/', async (req, res, next) => {
   try {
     let path = req.query.path;
-    console.log('AMIT: query: path:', path);
+    console.log('Query.route.get(): path:', path);
     if (!path) {
       res.status(400).send({error: `The 'path' query parameter cannot be empty.`});
     }
 
     let page = await db.getPage(path);
-
+    console.log('Query.route.get(): page:', page);
     if (page) {
       res.status(200).send(page);
     } else {

@@ -47,7 +47,7 @@ function withStyles(styles) {
 
     componentWillMount() {
       if (canUseDOM) {
-        invariant(styles.use, `The style-loader must be configured with reference-counted API.`);
+        invariant(styles.use, 'The style-loader must be configured with reference-counted API.');
         styles.use();
       } else {
         this.context.onInsertCss(styles.toString());
@@ -68,6 +68,7 @@ function withStyles(styles) {
     }
 
     render() {
+      // console.log'withStyles called:', ComposedComponent)
       return <ComposedComponent {...this.props} />;
     }
 

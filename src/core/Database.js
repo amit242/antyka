@@ -31,6 +31,7 @@ export default {
     // Read page content from a Jade file
     return new Promise((resolve) => {
       let fileName = path.join(CONTENT_DIR, (uri === '/' ? '/index' : uri) + '.jade');
+      console.log('Database.getpage()| fileName:', fileName);
       fs.readFile(fileName, {encoding: 'utf8'}, (err, data) => {
         if (err) {
           fileName = path.join(CONTENT_DIR, uri + '/index.jade');

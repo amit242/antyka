@@ -3,80 +3,50 @@
 import EventEmitter from 'events';
 import Dispatcher from '../dispatchers/Dispatcher';
 import ActionTypes from '../constants/ActionTypes';
+import BaseStore from './BaseStore';
 
 const CHANGE_EVENT = 'change';
-
 var pages = {};
 var loading = false;
 
-var AppStore = Object.assign({}, EventEmitter.prototype, {
-
-  isLoading() {
-    return loading;
-  },
-
-  /**
-   * Gets page data by the given URL path.
-   *
-   * @param {String} path URL path.
-   * @returns {*} Page data.
-   */
+class AppStore extends BaseStore {
+  constructor() {
+    super();
+    console.log('AppStore.constructor()');
+    this.subscribe(() => this._registerToActions.bind(this));
+    this._user = null;
+    this._jwt = null;
+  }
+  
   getPage(path) {
     return path in pages ? pages[path] : null;
-  },
-
-  /**
-   * Emits change event to all registered event listeners.
-   *
-   * @returns {Boolean} Indication if we've emitted an event.
-   */
-  emitChange() {
-    return this.emit(CHANGE_EVENT);
-  },
-
-  /**
-   * Register a new change event listener.
-   *
-   * @param {function} callback Callback function.
-   */
-  onChange(callback) {
-    this.on(CHANGE_EVENT, callback);
-  },
-
-  /**
-   * Remove change event listener.
-   *
-   * @param {function} callback Callback function.
-   */
-  off(callback) {
-    this.removeListener(CHANGE_EVENT, callback);
   }
+  
+  isLoading() {
+    return loading;
+  }
+  
+  _registerToActions(action) {
+    console.log('AppStore._registerToActions()| dispatchToken:', action);
+    switch (action.type) {
+      case ActionTypes.GET_PAGE:
+        loading = true;
+        this.emitChange();
+        break;
 
-});
+      case ActionTypes.RECEIVE_PAGE:
+        loading = false;
+        if (!action.err) {
+          console.log('AppStore._registerToActions()| action.page.path:', action.page.path);
+          pages[action.page.path] = action.page;
+        }
+        this.emitChange();
+        break;
 
-AppStore.dispatchToken = Dispatcher.register((action) => {
-
-  //// console.log('AppStore.dispatchToken:', action.type, action.page);
-  // console.log('AppStore.dispatchToken:', action.type);
-  switch (action.type) {
-
-    case ActionTypes.GET_PAGE:
-      loading = true;
-      AppStore.emitChange();
-      break;
-
-    case ActionTypes.RECEIVE_PAGE:
-      loading = false;
-      if (!action.err) {
-        pages[action.page.path] = action.page;
-      }
-      AppStore.emitChange();
-      break;
-
-    default:
+      default:
       // Do nothing
+    }
   }
+}
 
-});
-
-export default AppStore;
+export default new AppStore();

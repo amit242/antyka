@@ -20,7 +20,7 @@ class Navigation {
   }
 
   render() {
-  	console.log('Navigation render:', this.props);
+  	console.log('Navigation.render()| props:', this.props);
   	let navContent;
     if(this.props.userLoggedIn) {
       navContent = <a href="" className="Navigation-link" onClick={this.logout}>Logout</a>;

@@ -22,11 +22,17 @@ import FastClick from 'fastclick';
 
 let path = decodeURI(window.location.pathname);
 function run() {
-  var router = Router.create({routes: appRoutes});
+  let dt = new Date();
+  //alert();
+  console.log('Client.run()| render start... ', dt.getHours() + ':' + dt.getMinutes() + ':' + dt.getSeconds() + ':' +  dt.getMilliseconds());
+  var router = Router.create({
+    location: Router.HistoryLocation,
+    routes: appRoutes
+  });
   RouterContainer.set(router);
 
   let jwt = localStorage.getItem('closyaar-jwt');
-  console.log('appRoutessss:jwt:',jwt);
+  console.log('Client.run()| localStorage jwt:',jwt);
   if (jwt) {
     LoginAction.loginUser(jwt);
   }
@@ -40,9 +46,12 @@ function run() {
         onSetTitle: value => {document.title = value; }
       }
     };
-    console.log('Amit App.jsx:', Handler);
+    console.log('Client.run()|  react render props:', props);
     React.render(<Handler { ...props } />, document.getElementById('app'));
   });
+
+  dt = new Date();
+  console.log('Client.run()| render end... ', dt.getHours() + ':' + dt.getMinutes() + ':' + dt.getSeconds() + ':' +  dt.getMilliseconds());
 }
 
 Promise.all([
@@ -52,7 +61,6 @@ Promise.all([
     } else {
       window.attachEvent('onload', resolve);
     }
-  }).then(() => FastClick.attach(document.body)),
-  new Promise((resolve) => AppActions.loadPage(path, resolve))
+  }).then(() => FastClick.attach(document.body))
 ]).then(run);
 

@@ -3,7 +3,7 @@ import LoginActions from '../actions/LoginAction';
 class AuthService {
 
   login(username, password, errorCb) {
-    console.log('AMIT Trying login with', username, password);
+    console.log('AuthService.login()| Trying login user with', username, password);
 
 
     http.post('/api/authenticate')
@@ -14,16 +14,16 @@ class AuthService {
     })
     .set('Accept', 'application/json')
     .end((err, response) => {
-      console.log('AMIT AuthService', err, response);
+      console.log('AuthService.login()|  err, response', err, response);
       if(!err && response && response.body && response.body.success) {
-        console.log('Authentication success!!!');
+        console.log('AuthService.login()| Authentication success!!!');
         // We get a JWT back.
         let jwt = response.body.token;
         // We trigger the LoginAction with that JWT.
         LoginActions.loginUser(jwt);
         return true;
       } else {
-        console.log('Authentication Fail!!!');
+        console.log('AuthService.login()| Authentication Fail!!!');
         errorCb();
       }
     });
