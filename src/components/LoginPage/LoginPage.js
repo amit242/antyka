@@ -4,15 +4,13 @@ import React, { PropTypes } from 'react';
 import styles from './LoginPage.less';
 import withStyles from '../../decorators/withStyles';
 import Login from '../Login';
+import RegisterPage from '../RegisterPage';
 // import Link from '../../utils/Link';
 // import AppActions from '../../actions/AppActions';
 // import AuthService from '../../auth/AuthService';
 
 @withStyles(styles)
 export default class LoginPage {
-  static willTransitionTo(transition) {
-      console.log('Amit LOGING STATIC willTransitionTo:');
-    }
   static contextTypes = {
     onSetTitle: PropTypes.func.isRequired
   };
@@ -23,6 +21,7 @@ export default class LoginPage {
     this.context.onSetTitle(title);
     return (
       <div className="LoginPage">
+        <RegisterPage className="Register" />
         <div className="Login">
           <Login />
         </div>

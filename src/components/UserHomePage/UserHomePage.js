@@ -16,11 +16,13 @@ class UserHomePage extends React.Component {
     onPageNotFound: PropTypes.func.isRequired
   };
   render() {
-    let title = 'Home page for:';
+    let title = this.props.user.name;
     this.context.onSetTitle(title);
     return (
       <div className="UserHomePage">
-        User logged in
+        <span>User name: {this.props.user.name}</span>
+        <br/>
+        <span>id: {this.props.user.id}</span>
       </div>
     );
   }

@@ -12,6 +12,7 @@ class LoginStore extends BaseStore {
     this.subscribe(() => this._registerToActions.bind(this));
     this._user = null;
     this._jwt = null;
+    this._isloggedin = null;
   }
 
   _registerToActions(action) {
@@ -20,14 +21,23 @@ class LoginStore extends BaseStore {
       case ActionTypes.LOGIN_USER:
         //console.log('AMIT LOGINSTORE: emitchange with jwt', action.jwt);
         this._jwt = action.jwt;
-        this._user = 'XXXXX';
+        this._user = action.user;
+        this._isloggedin = true;
         //this._user = jwt_decode(this._jwt);
         this.emitChange();
         break;
       case ActionTypes.LOGOUT_USER:
         this._user = null;
+        this._isloggedin = false;
         this.emitChange();
         break;
+      case ActionTypes.SIGNUP_USER:
+        this._user = action.user;
+        this.emitChange();
+        break;
+      case ActionTypes.TOKEN_VERIFIED:
+        this._user = action.user;
+        this.emitChange();
       default:
         break;
     }
@@ -42,8 +52,8 @@ class LoginStore extends BaseStore {
   }
 
   isLoggedIn() {
-    console.log('LoginStore.isLoggedIn()| user:', this._user);
-    return !!this._user;
+    console.log('LoginStore.isLoggedIn()| :', this._isloggedin);
+    return this._isloggedin;
   }
 }
 

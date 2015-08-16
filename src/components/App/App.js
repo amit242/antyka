@@ -30,23 +30,30 @@ export default class App extends React.Component {
 
   _getLoginState() {
     return {
-      userLoggedIn: LoginStore.isLoggedIn()
+      userLoggedIn: LoginStore.isLoggedIn(),
+      user: LoginStore.user
     };
   }
 
   componentDidMount() {
     this.changeListener = this._onChange.bind(this);
+    this.changePageListener = this._onPageChange.bind(this);
     LoginStore.addChangeListener(this.changeListener);
+    AppStore.addChangeListener(this.changePageListener);
   }
-
+  _onPageChange() {
+    console.log('App._onPageChange()| AppStore changed!!!');
+    //this.setState(this._getLoginState());
+  }
   _onChange() {
+    console.log('App._onChange()| LoginStore changed!!!');
     this.setState(this._getLoginState());
   }
 
   componentWillUnmount() {
     LoginStore.removeChangeListener(this.changeListener);
+    AppStore.removeChangeListener(this.changePageListener);
   }
-
 
   render() {
     console.log('App.Render()| client?:', canUseDOM);
@@ -54,27 +61,17 @@ export default class App extends React.Component {
     console.log('App.Render()| isLoggedIn?:', this._getLoginState());
 
     this.context.onSetTitle('Closyaar');
-    let mainSection;
+
     if(this._getLoginState() && this._getLoginState().userLoggedIn) {
       console.log('App.Render()| user logged in...');
-      mainSection = <RouteHandler />;
     } else {
       console.log('App.Render()| user NOT logged in...');
-      if(canUseDOM) {
-        mainSection = <LoginPage />;
-      } else {
-        //mainSection = <RouteHandler />; // TODO: review code here
-      }
     }
-    /*
-    if(!canUseDOM) {
-      mainSection = <RouteHandler />;
-    }*/
-
+    
     return (
       <div className="App-container">
         <Header isLoggedIn={this._getLoginState()}/>
-        {mainSection}
+        <RouteHandler user={this._getLoginState().user}/>
         <Feedback />
         <Footer />
       </div>);

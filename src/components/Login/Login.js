@@ -4,7 +4,7 @@ import React, { PropTypes } from 'react';
 import styles from './Login.less';
 import withStyles from '../../decorators/withStyles';
 import TextBox from '../TextBox';
-import Link from '../../utils/Link';
+import { Link } from 'react-router';
 //import AppActions from '../../actions/AppActions';
 import AuthService from '../../services/AuthService';
 
@@ -66,7 +66,7 @@ export default class Login extends React.Component {
             <input type="submit" onClick={this.authenticate.bind(this)} value="Log in" />
           </form>
           <div className="Login-spacer">or</div>
-          <a className="Login-link Login-link-highlight" href="/register" onClick={Link.handleClick}>Sign up</a>
+          <Link className="Login-link Login-link-highlight" to="register">Login with Facebook</Link>
         </div>
     );
   }

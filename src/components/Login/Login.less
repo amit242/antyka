@@ -3,10 +3,14 @@
 @import '../variables.less';
 
 .Login {
-    float: right;
-    padding: 50px 0;
-    margin-right: 15%;
-    .content-margin;
+    &-container {
+        padding: 10px;
+        padding-bottom: 20px;
+        background-color: #789;
+    }
+    &-TextBox {
+        width: 100%;
+    }
     input {
     	color: black;
     }
@@ -46,12 +50,6 @@
         &:hover {
             background: rgba(255, 255, 255, .8);
         }
-    }
-    &-container {
-        padding: 10px;
-        padding-bottom: 20px;
-        max-width: @max-content-width;
-        background-color: #789;
     }
 
     &-link {

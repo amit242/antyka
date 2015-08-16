@@ -49,6 +49,28 @@ class AuthService {
     });*/
   }
 
+  signUp(user, errorCb) {
+    console.log('AuthService.signUp()| Trying signUp user:', user);
+    http.post('/api/signup')
+    .type('form')
+    .send(user)
+    .set('Accept', 'application/json')
+    .end((err, response) => {
+      console.log('AuthService.signUp()|  err, response', err, response);
+      if(!err && response && response.body && response.body.success) {
+        console.log('AuthService.signUp()| signUp success!!!');
+        // We get a JWT back.
+        //let jwt = response.body.token;
+        // We trigger the LoginAction with that JWT.
+        LoginActions.signUpUser(user);
+        return true;
+      } else {
+        console.log('AuthService.signUp()| signUp Fail!!!');
+        errorCb();
+      }
+    });
+  }
+
   logout() {
     LoginActions.logoutUser();
   }

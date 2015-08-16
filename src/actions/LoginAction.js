@@ -1,29 +1,41 @@
 import Dispatcher from '../dispatchers/Dispatcher';
 import ActionTypes from '../constants/ActionTypes';
 import RouterContainer from '../services/RouterContainer';
+import http from 'superagent';
 
 let jwtKey = 'closyaar-jwt';
 export default {
   loginUser: (jwt) => {
     console.log('LoginAction.loginUser()| supplied jwt:', jwt);
-    let savedJwt = localStorage.getItem(jwtKey);
-    console.log('LoginAction.loginUser()| savedJwt:', savedJwt);
-    if(savedJwt !== jwt) {
-      var nextPath = RouterContainer.get().getCurrentQuery() && RouterContainer.get().getCurrentQuery().nextPath || '/';
 
-      RouterContainer.get().transitionTo(nextPath);
-      // We save the JWT in localStorage to keep the user authenticated. We’ll learn more about this later.
-      //console.debug('Saving jwt in localStorage for user', user);
-      localStorage.setItem(jwtKey, jwt);
+    if(jwt) {
+      http.get('/api/verify')
+      .set('x-closyaar-access-token', jwt)
+      .end((err, response) => {
+        console.log('LoginAction. rest call|  err, response', err, response);
+        if(!err && response && response.body && response.body.verified) {
+          console.log('LoginAction.loginUser()| Authentication success!!!');
+          console.log('LoginAction.loginUser()| Saving jwt in localStorage for user...');
+          
+          localStorage.setItem(jwtKey, jwt);
+          // Send the action to all stores through the Dispatcher
+
+          Dispatcher.dispatch({
+            type: ActionTypes.LOGIN_USER,
+            jwt: jwt,
+            user: {
+              id: response.body.user,
+              name: response.body.name
+            }
+          });
+        } else {
+          console.log('LoginAction.loginUser()| Authentication Fail!!!');
+        }
+        var nextPath = RouterContainer.get().getCurrentQuery() && RouterContainer.get().getCurrentQuery().nextPath || '/';
+        RouterContainer.get().transitionTo(nextPath);
+        console.log('LoginAction.loginUser()| nextPath:', nextPath);
+      });
     }
-    // Go to the Home page once the user is logged in
-    //RouterContainer.get().transitionTo(‘/‘);
-
-    // Send the action to all stores through the Dispatcher
-    Dispatcher.dispatch({
-      type: ActionTypes.LOGIN_USER,
-      jwt: jwt
-    });
   },
 
   logoutUser: () => {
@@ -32,5 +44,44 @@ export default {
     Dispatcher.dispatch({
       type: ActionTypes.LOGOUT_USER
     });
+  },
+
+  signUpUser: (user) => {
+    //RouterContainer.get().transitionTo('/setpassword?emailsent=1');
+    Dispatcher.dispatch({
+      type: ActionTypes.SIGNUP_USER,
+      user: user
+    });
+  },
+
+  verifyJWT: (jwt) => {
+    console.log('LoginAction.verifyJWT()| supplied jwt:', jwt);
+
+    if(jwt) {
+      http.get('/api/verifyusertoken')
+      .set('x-closyaar-access-token', jwt)
+      .end((err, response) => {
+        console.log('LoginAction.verifyJWT() rest call|  response', response.body);
+        if(!err && response && response.body && response.body.success) {
+          console.log('LoginAction.verifyJWT()| Authentication success!!!', response.body.user);
+          
+          // Send the action to all stores through the Dispatcher
+
+          Dispatcher.dispatch({
+            type: ActionTypes.TOKEN_VERIFIED,
+            user: response.body.user
+          });
+        } else {
+          console.log('LoginAction.verifyJWT()| Authentication Fail!!!');
+          Dispatcher.dispatch({
+            type: ActionTypes.TOKEN_VERIFIED,
+            user: {
+              invalidToken: true
+            }
+          });
+          //console.log('LoginAction.verifyJWT()| Err:', err);
+        }
+      });
+    }
   }
 };

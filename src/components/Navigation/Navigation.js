@@ -27,6 +27,7 @@ class Navigation {
     }
     return (
       <div className={classNames(this.props.className, 'Navigation')} role="navigation">
+        {this.props.userLoggedIn && <div>Welcome {this.props.user.name}</div>}
         {navContent}
       </div>
     );

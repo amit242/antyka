@@ -4,7 +4,7 @@ import React, { PropTypes } from 'react';
 import styles from './Footer.less';
 import withViewport from '../../decorators/withViewport';
 import withStyles from '../../decorators/withStyles';
-import Link from '../../utils/Link';
+import { Link } from 'react-router';
 
 @withViewport
 @withStyles(styles)
@@ -44,7 +44,8 @@ class Footer {
           <span className="Footer-spacer">·</span>
           <a className="Footer-link" href="/not-found" onClick={Link.handleClick}>Not Found</a>
           <span className="Footer-spacer"> | </span>
-          <a className="Navigation-link" href="/login" onClick={Link.handleClick}>Log in</a>
+          {/*<a className="Navigation-link" href="/login" onClick={Link.handleClick}>Log in</a>*/}
+          <Link className="Footer-link" to="login">Log in</Link>
           <span className="Footer-spacer">·</span>
           <a className="Footer-link" href="/about" onClick={Link.handleClick}>About</a>
           <span className="Footer-spacer">·</span>

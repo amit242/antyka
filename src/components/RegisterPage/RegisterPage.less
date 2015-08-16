@@ -3,24 +3,24 @@
 @import '../variables.less';
 
 .RegisterPage {
-
-    .content-margin;
+    
     &-container {
-        margin: 0 auto;
-        padding: 0 0 40px;
-        max-width: @max-content-width;
-        background-color: #789;
-        &-traditional, &-social {
-            float:left;
-            width: 48%;
-            overflow: hidden;
+       background-color: #789;
+       input[type=submit] {
+            color: black;
+            border: none;
+            font-size: 1.125em;
+            padding: 3px 8px;
+            margin-left: 2%;
+            width: 95%;
+            float: left;
+            background: rgba(255, 255, 255, .5);
+            &:hover {
+                background: rgba(255, 255, 255, .8);
+            }
         }
-        
-    }
-    &-spacer {
-        color: rgba(255, 255, 255, .3);
     }
     &-textbox {
-        width: 100px;
+        width: 100%;
     }
 }
