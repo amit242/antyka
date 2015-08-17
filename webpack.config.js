@@ -15,6 +15,7 @@ const argv = minimist(process.argv.slice(2));
 const DEBUG = !argv.release;
 const STYLE_LOADER = 'style-loader/useable';
 const CSS_LOADER = DEBUG ? 'css-loader' : 'css-loader?minimize';
+console.log('CSS_LOADER mode is:', CSS_LOADER);
 const AUTOPREFIXER_BROWSERS = [
   'Android 2.3',
   'Android >= 4',
