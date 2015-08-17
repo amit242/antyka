@@ -1,12 +1,14 @@
 /* React Starter Kit | MIT License | http://www.reactstarterkit.com/ */
 
 @import '../variables.less';
+@import '../basic.less';
 
 .Login {
     &-container {
         padding: 10px;
         padding-bottom: 20px;
-        background-color: #789;
+        //background-color: #789;
+        .box-border;
     }
     &-TextBox {
         width: 100%;
@@ -15,7 +17,7 @@
     	color: black;
     }
     &-error {
-        color: #d84;
+        color: #d04;
         font-size: 15px;
         padding-left: 10px;
     }
@@ -23,10 +25,12 @@
         line-height: 40px;
         text-align: center;
         vertical-align: middle;
-        color: #bbb;
+        //color: #bbb;
+        color: #55f;
     }
     &-helper {
-    	color: #ddd;
+    	//color: #ddd;
+        color: #00f;
         padding: 10px;
         font-size: 12px;
         
@@ -36,20 +40,11 @@
         
         &-forgot {
             float: right;
-            color: #ddd;
+            color: #00f;
         }
     }
     input[type=submit] {
-        color: black;
-        border: none;
-        font-size: 1.125em;
-        padding: 3px 8px;
-        margin-left: 5%;
-        width: 90%;
-        background: rgba(255, 255, 255, .5);
-        &:hover {
-            background: rgba(255, 255, 255, .8);
-        }
+        .antyka-button;
     }
 
     &-link {
@@ -67,23 +62,16 @@
 
         &,
         &:active,
-        &:visited {
-            color: rgba(0, 0, 0, .6);
-        }
-
-        &:hover {
-            color: rgba(0, 0, 0, 1);
-        }
 
         &-highlight {
             //margin-right: 8px;
             //margin-left: 8px;
             //border-radius: 3px;
-            background: rgba(255, 255, 255, .5);
-            color: #fff;
-
+            color: white;
+            background: rgba(0, 0, 255, .6);
             &:hover {
-                background: rgba(255, 255, 255, .8);
+              background: rgba(0, 0, 255, .9);
+              box-shadow: 0px 0px 5px #00F;
             }
         }
     }

@@ -18,7 +18,6 @@ class TextBox {
   };
 
   render() {
-    console.log('AMIT: ',this.props.controlClassName);
     return (
       <div className={classNames(this.props.className, 'TextBox')}>
         <span className="TextBox-span">{this.props.textboxLabel}</span>

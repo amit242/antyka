@@ -66,7 +66,7 @@ class AuthService {
         return true;
       } else {
         console.log('AuthService.signUp()| signUp Fail!!!');
-        errorCb();
+        errorCb(response);
       }
     });
   }

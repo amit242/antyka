@@ -158,7 +158,7 @@ apiRoutes.post('/signup', function(req, res) {
 
       res.json({ success: true, message: 'User signup success!!!' });
     } else {
-      res.json({ success: false, message: 'User already exists, did you forget password?' });
+      res.json({ success: false, message: 'User already exists, did you forget your password?' }); // TODO: send error code instead of msg
     }
   });
 });

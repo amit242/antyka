@@ -1,25 +1,27 @@
 /* React Starter Kit | MIT License | http://www.reactstarterkit.com/ */
 
 @import '../variables.less';
+@import '../basic.less';
 
 .RegisterPage {
     
     &-container {
-       background-color: #789;
+       //background-color: #789;
+       .box-border;
+       color: black;
        input[type=submit] {
-            color: black;
-            border: none;
-            font-size: 1.125em;
-            padding: 3px 8px;
-            margin-left: 2%;
-            width: 95%;
-            float: left;
-            background: rgba(255, 255, 255, .5);
-            &:hover {
-                background: rgba(255, 255, 255, .8);
-            }
+            .antyka-button;
         }
+
+        a {
+            color: white;
+        }
+
+        
     }
+    &-error {
+            color: #C12;
+        }
     &-textbox {
         width: 100%;
     }

@@ -59,14 +59,21 @@ export default class LoginPage extends React.Component {
     e.preventDefault();
     //alert(this.state);
     console.log('SetPassword.updatePassword()| state:', this.state, e);
+    let pattern = new RegExp(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$/);
+
+
     if(this.state.newPwd === this.state.confirmPwd) {
-      let user = {
-        id: this._getUser().id,
-        password: this.state.newPwd
+      if(pattern.test(this.state.newPwd)) {
+        let user = {
+          id: this._getUser().id,
+          password: this.state.newPwd
+        }
+        AuthService.signUp(user, () => {
+          this.setState({signUpError: true});
+        });
+      } else {
+        alert('Passwords must have: \nMinimum 8 characters\nAt least 1 Alphabet, 1 Number and 1 Special Character\nNo spaces');
       }
-      AuthService.signUp(user, () => {
-        this.setState({signUpError: true});
-      });
     } else {
       alert('Passwords dont match');
     }
@@ -87,7 +94,7 @@ export default class LoginPage extends React.Component {
     let component;
     if(user && user.name) {
       component = <div className="SetPassword-container">
-          <div>Hi {user.name}, <br /> Please update your Password</div>
+          <div>Hi <b>{user.name}</b>, <br /> Please update your Password</div>
           <TextBox id="newPwd" className='SetPassword-textbox' controlClassName={pwdMatch} ref="newPwd" value={this.newPwd} type="Password" placeholder="Enter New Password" onChange={this._onchange.bind(this)} />
           <TextBox id="confirmPwd" className="SetPassword-textbox" controlClassName={pwdMatch}  ref="confirmPwd" value={this.confirmPwd} type="Password" placeholder="Confirm Password" onChange={this._onchange.bind(this)} />
           <input type="submit"  value="Update Password" onClick={this.updatePassword.bind(this)} />
