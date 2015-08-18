@@ -1,5 +1,7 @@
 import http from 'superagent';
 import LoginActions from '../actions/LoginAction';
+import jwt from 'jsonwebtoken';
+
 class AuthService {
 
   login(username, password, errorCb) {
@@ -23,7 +25,7 @@ class AuthService {
         LoginActions.loginUser(jwt);
         return true;
       } else {
-        console.log('AuthService.login()| Authentication Fail!!!');
+        console.log('AuthService.login()| Authentication Failed!!!');
         errorCb();
       }
     });
@@ -49,6 +51,10 @@ class AuthService {
     });*/
   }
 
+  logout() {
+    LoginActions.logoutUser();
+  }
+
   signUp(user, errorCb) {
     console.log('AuthService.signUp()| Trying signUp user:', user);
     http.post('/api/signup')
@@ -65,14 +71,40 @@ class AuthService {
         LoginActions.signUpUser(user);
         return true;
       } else {
-        console.log('AuthService.signUp()| signUp Fail!!!');
+        console.log('AuthService.signUp()| signUp Failed!!!');
         errorCb(response);
       }
     });
   }
 
-  logout() {
-    LoginActions.logoutUser();
+  changePassword(user, cb) {
+    console.log('AuthService.changePassword()| Trying changePassword for user:', user);
+    // TODO: implement SSL. For the time being doing a pseudo security
+
+    let token = jwt.sign(user, user.jwt);
+
+    console.log('AuthService.changePassword()| jwt:', user.jwt);
+    console.log('AuthService.changePassword()| token:', token);
+
+    http.post('/api/changepassword')
+    .type('form')
+    .send({
+      id: user._id,
+      token: token
+    })
+    .set('Accept', 'application/json')
+    .end((err, response) => {
+      console.log('AuthService.changePassword()|  err, response', err, response);
+      if(!err && response && response.body && response.body.success) {
+        console.log('AuthService.changePassword()| changePassword success!!!');
+        // We get a JWT back.
+        //let jwt = response.body.token;
+        // We trigger the LoginAction with that JWT.
+      } else {
+        console.log('AuthService.changePassword()| changePassword Failed!!!');
+      }
+      cb(response.body);
+    });
   }
 }
 

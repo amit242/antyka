@@ -6,7 +6,9 @@ import withStyles from '../../decorators/withStyles';
 import TextBox from '../TextBox';
 import LoginAction from '../../actions/LoginAction';
 import LoginStore from '../../stores/LoginStore';
+import AuthService from '../../services/AuthService';
 import classNames from 'classnames';
+import { Link } from 'react-router';
 
 @withStyles(styles)
 export default class LoginPage extends React.Component {
@@ -19,7 +21,8 @@ export default class LoginPage extends React.Component {
 
     this.state = {
       newPwd: '',
-      confirmPwd: ''
+      confirmPwd: '',
+      updateResponse: null
     };
   }
 
@@ -64,12 +67,14 @@ export default class LoginPage extends React.Component {
 
     if(this.state.newPwd === this.state.confirmPwd) {
       if(pattern.test(this.state.newPwd)) {
-        let user = {
-          id: this._getUser().id,
-          password: this.state.newPwd
-        }
-        AuthService.signUp(user, () => {
-          this.setState({signUpError: true});
+        let user = this._getUser();
+        user.password = this.state.newPwd;
+
+        AuthService.changePassword(user, (response) => {
+          this.setState({updateResponse: response});
+        },
+          (response) => {
+          this.setState({updateResponse: response});
         });
       } else {
         alert('Passwords must have: \nMinimum 8 characters\nAt least 1 Alphabet, 1 Number and 1 Special Character\nNo spaces');
@@ -89,22 +94,36 @@ export default class LoginPage extends React.Component {
     if(this.state.newPwd !== this.state.confirmPwd) {
       pwdMatch = 'SetPassword-textbox-error';
     }
-    console.log('PWD AMIT:', this.state.newPwd, this.state.confirmPwd, pwdMatch);
-    let user = this._getUser();
     let component;
-    if(user && user.name) {
-      component = <div className="SetPassword-container">
-          <div>Hi <b>{user.name}</b>, <br /> Please update your Password</div>
-          <TextBox id="newPwd" className='SetPassword-textbox' controlClassName={pwdMatch} ref="newPwd" value={this.newPwd} type="Password" placeholder="Enter New Password" onChange={this._onchange.bind(this)} />
-          <TextBox id="confirmPwd" className="SetPassword-textbox" controlClassName={pwdMatch}  ref="confirmPwd" value={this.confirmPwd} type="Password" placeholder="Confirm Password" onChange={this._onchange.bind(this)} />
-          <input type="submit"  value="Update Password" onClick={this.updatePassword.bind(this)} />
-        </div>;
-    } else if(user && user.invalidToken) {
-      component = <div className="SetPassword-error">
-          Bad Token!!!
+    console.log('PWD server response:', this.state.updateResponse);
+    
+    if(this.state.updateResponse) {
+      let classname, message = this.state.updateResponse.message;
+      if(this.state.updateResponse.success) {
+        classname = 'SetPassword-success';
+        message = <div>{message}Please <Link  to="login">login</Link> with the new password...</div>;
+      } else {
+        classname = 'SetPassword-error';
+      }
+      component = <div className={classname}>
+          {message}
         </div>
     } else {
-      component = '';
+      let user = this._getUser();
+      if(user && user.name) {
+        component = <div className="SetPassword-container">
+            <div>Hello <b>{user.name}</b>, <br /> Please update your Password</div>
+            <TextBox id="newPwd" className='SetPassword-textbox' controlClassName={pwdMatch} ref="newPwd" value={this.newPwd} type="Password" placeholder="Enter New Password" onChange={this._onchange.bind(this)} />
+            <TextBox id="confirmPwd" className="SetPassword-textbox" controlClassName={pwdMatch}  ref="confirmPwd" value={this.confirmPwd} type="Password" placeholder="Confirm Password" onChange={this._onchange.bind(this)} />
+            <input type="submit"  value="Update Password" onClick={this.updatePassword.bind(this)} />
+          </div>;
+      } else if(user && user.invalidToken) {
+        component = <div className="SetPassword-error">
+            Bad/Expired Token!!!
+          </div>
+      } else {
+        component = '';
+      }
     }
     return (
       <div className="SetPassword">

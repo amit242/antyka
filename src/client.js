@@ -54,13 +54,19 @@ function run() {
   console.log('Client.run()| render end... ', dt.getHours() + ':' + dt.getMinutes() + ':' + dt.getSeconds() + ':' +  dt.getMilliseconds());
 }
 
-Promise.all([
-  new Promise((resolve) => {
-    if (window.addEventListener) {
-      window.addEventListener('DOMContentLoaded', resolve);
-    } else {
-      window.attachEvent('onload', resolve);
-    }
-  }).then(() => FastClick.attach(document.body))
-]).then(run);
+try {
+  Promise.all([
+    new Promise((resolve) => {
+      if (window.addEventListener) {
+        window.addEventListener('DOMContentLoaded', resolve);
+      } else {
+        window.attachEvent('onload', resolve);
+      }
+    }).then(() => FastClick.attach(document.body))
+  ]).then(run);
+} catch(e) {
+  // TODO: IE hack, find a better way to check if Promise is not defined
+  console.log('Most probably you are running in IE, run without promise, error:', e);
+  run(); // internet explorer
+}
 

@@ -212,6 +212,50 @@ apiRoutes.post('/authenticate', function(req, res) {
   });
 });
 
+apiRoutes.post('/changepassword', function(req, res) {
+  let mongoDBUserId = req.body.id;
+  let token = req.body.token;
+  console.log('server.REST.POST.changepassword()| userid, token:', mongoDBUserId, token);
+
+  userModel.findOne({
+    _id: mongoDBUserId
+  }, function(err, user) {
+
+    if (err) {
+      console.log('server.REST.POST.changepassword()| DB error:', err);
+      return res.status(403).json({ success: false, message: 'Password reset failed. database exception.' });
+    }
+
+    if (!user) {
+      res.status(403).json({ success: false, message: 'Password reset failed. User not found.' });
+    } else if (user) {
+
+      console.log('server.REST.POST.changepassword()| trying to authenticate token:', token);
+
+      jwt.verify(token, user.jwt, function(jwtError, decoded) {
+        if (jwtError) {
+          return res.status(403).json({ success: false, message: 'Password reset failed. Failed to authenticate token.' });
+        } else {
+          console.log('server.REST.POST.changepassword()| token verified... decoded user:', decoded);
+          // TODO: ALERT!!!! this is not at all secure, just pseudo security.
+          let query = {_id: decoded._id};
+          
+          userModel.findOneAndUpdate(query, { $set: { jwt: undefined, password: decoded.password }}, (updateError, numRow) => {
+            console.log('server.REST.POST.changepassword()| mongoDB update:', numRow, updateError);
+            if (updateError) {
+              return res.status(500).json({ success: false, message: 'Password reset failed. Failed to authenticate token.', error: updateError });
+            }
+            return res.status(200).json({ success: true, message: 'Password reset Successful!!!'});
+          });
+
+
+          // console.log('Auth Success decoded:', decoded);
+        }
+      });
+    }
+  });
+});
+
 // route middleware to verify a token
 // all requests after this will be authenticated via token
 apiRoutes.use(function(req, res, next) {

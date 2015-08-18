@@ -38,7 +38,9 @@ class RegisterPage extends React.Component {
   }
 
   signUp(e) {
+    
     e.preventDefault();
+    
     //alert(this.state);
     console.log('RegisterPage.signUp()| state:', this.state, e);
     if(this.state.name && this.state.email) {
@@ -52,7 +54,9 @@ class RegisterPage extends React.Component {
         this.setState({signUpError: response.body});
       });
     } else {
-      alert('Name and Email mandatory');
+      this.setState({signUpError: {
+        message: 'Name and Email are mandatory'
+      }});
     }
   }
 
