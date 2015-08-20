@@ -57,6 +57,7 @@ export default class App extends React.Component {
 
   render() {
     console.log('App.Render()| client?:', canUseDOM);
+    console.log('App.Render()| trylogin?:', this.props);
     console.log('App.Render()| context:', this.context);
     console.log('App.Render()| isLoggedIn?:', this._getLoginState());
 
@@ -69,7 +70,7 @@ export default class App extends React.Component {
     }
     
     return (
-      <div className="App-container">
+      <div className="app-container">
         <Header isLoggedIn={this._getLoginState()}/>
         <RouteHandler user={this._getLoginState().user}/>
         <Feedback />

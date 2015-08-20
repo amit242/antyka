@@ -33,7 +33,9 @@ function run() {
 
   let jwt = localStorage.getItem('closyaar-jwt');
   console.log('Client.run()| localStorage jwt:',jwt);
+  let tryingLogin = false;
   if (jwt) {
+    tryingLogin = true;
     LoginAction.loginUser(jwt);
   }
 
@@ -47,7 +49,7 @@ function run() {
       }
     };
     console.log('Client.run()|  react render props:', props);
-    React.render(<Handler { ...props } />, document.getElementById('app'));
+    React.render(<Handler { ...props } tryLogin = {tryingLogin}/>, document.getElementById('app'));
   });
 
   dt = new Date();

@@ -21,10 +21,8 @@ export default class LoginPage {
     this.context.onSetTitle(title);
     return (
       <div className="LoginPage">
+        <Login className="Login"/>
         <RegisterPage className="Register" />
-        <div className="Login">
-          <Login />
-        </div>
       </div>
     );
   }

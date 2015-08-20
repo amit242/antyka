@@ -1,5 +1,3 @@
-/*! React Starter Kit | MIT License | http://www.reactstarterkit.com/ */
-
 import http from 'superagent';
 import { canUseDOM } from 'react/lib/ExecutionEnvironment';
 import Dispatcher from '../dispatchers/Dispatcher';

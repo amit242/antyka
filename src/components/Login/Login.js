@@ -5,6 +5,7 @@ import styles from './Login.less';
 import withStyles from '../../decorators/withStyles';
 import TextBox from '../TextBox';
 import { Link } from 'react-router';
+import classNames from 'classnames';
 //import AppActions from '../../actions/AppActions';
 import AuthService from '../../services/AuthService';
 
@@ -54,7 +55,7 @@ export default class Login extends React.Component {
     let title = 'Login';
     this.context.onSetTitle(title);
     return (
-        <div className="Login-container">
+        <div className={classNames(this.props.className, 'Login-container')}>
           <form>
             <TextBox className="Login-TextBox" ref="userId" value={this.userId} type="text" placeholder="Email" onChange={this.userNameChanged.bind(this)} />
             <TextBox className="Login-TextBox" ref="password" value={this.password} type="password" placeholder="Password" onChange={this.passwordChanged.bind(this)} />
