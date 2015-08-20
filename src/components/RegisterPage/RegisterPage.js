@@ -80,7 +80,7 @@ class RegisterPage extends React.Component {
       }
 
       component = <form>
-          <h1>{title}</h1>
+          <b>{title}</b>
           {errorComponent}
           <TextBox id="name" className="RegisterPage-textbox" ref="name" value={this.name} type="text" placeholder="Name" onChange={this._onchange.bind(this)}/>
           <TextBox id="email" className="RegisterPage-textbox" ref="email" value={this.email} type="text" placeholder="email id" onChange={this._onchange.bind(this)}/>
