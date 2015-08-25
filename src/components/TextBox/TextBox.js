@@ -19,9 +19,8 @@ class TextBox {
     return (
       <div className={classNames(this.props.className, 'TextBox')}>
         <span className="TextBox-span">{this.props.textboxLabel}</span>
-        {this.props.maxLines > 1 ?
-          <textarea {...this.props} className={classNames(this.props.controlClassName, "TextBox-input")} ref="input" key="input" rows={this.props.maxLines} /> :
-          <input {...this.props} className={classNames(this.props.controlClassName, "TextBox-input")} ref="input" key="input" />}
+        {this.props.maxLines > 1 ? (<textarea {...this.props} className={classNames(this.props.controlClassName, "TextBox-input")} ref="input" key="input" rows={this.props.maxLines} />) :
+          (<input {...this.props} className={classNames(this.props.controlClassName, "TextBox-input")} ref="input" key="input" />)}
       </div>
     );
   }

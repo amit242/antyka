@@ -5,29 +5,36 @@
 @brand-color: #61dafb;
 
 .Header {
+    .content-width;
     background: #22426d;
     color: #fff;
     position: fixed;
-    width: 100%;
+    z-index: 1000;
     top: 0px;
-    height: 75px;
+    height: 63px;
+    box-shadow: 0px 3px 15px #333;
 
     &-container {
-        margin-left: 15%;
-        margin-right: 15%;
-        padding: 7px 2px;
+
+        //z-index: 1000;
+        width: 1000px;
+        margin-left: auto;
+        margin-right: auto;
+        //padding: 7px 2px;
         //max-width: @max-content-width;
         //min-width: 550px;
     }
 
     &-brand {
+        float: left;
         color: lighten(@brand-color, 10%);
         text-decoration: none;
         font-size: 1.75em; // ~28px
     }
 
     &-brandImg {
-
+        height: 50px;
+        width: 91px;
     }
 
     &-brandTxt {
@@ -37,8 +44,6 @@
 
     &-nav {
         float: right;
-        margin-top: 6px;
-        
     }
 
     &-banner {

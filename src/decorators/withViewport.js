@@ -29,7 +29,7 @@ function withViewport(ComposedComponent) {
     componentDidMount() {
       if (!eventEmitter) {
         eventEmitter = new EventEmitter();
-        eventEmitter.setMaxListeners(1);
+        eventEmitter.setMaxListeners(2);
         window.addEventListener(RESIZE_EVENT, handleWindowResize);
         window.addEventListener('orientationchange', handleWindowResize);
       }

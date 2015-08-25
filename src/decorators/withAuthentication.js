@@ -21,7 +21,7 @@ function withAuthentication(ComposedComponent) {
       console.log('withAuthentication.willTransitionTo()| transition:', transition);
       console.log('withAuthentication.willTransitionTo()| canUseDOM:', canUseDOM);
       if (!LoginStore.isLoggedIn()) {
-          console.log('withAuthentication.willTransitionTo()| user not logged in transitioning to path:', transition.path);
+          console.log('withAuthentication.willTransitionTo()| user not logged in, will transition to this path after login:', transition.path);
           transition.redirect('login', {}, transition.path);
       }
     }

@@ -23,10 +23,7 @@ export default {
           Dispatcher.dispatch({
             type: ActionTypes.LOGIN_USER,
             jwt: jwt,
-            user: {
-              id: response.body.user,
-              name: response.body.name
-            }
+            user: response.body.user
           });
         } else {
           console.log('LoginAction.loginUser()| Authentication Fail!!!');

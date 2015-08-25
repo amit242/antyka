@@ -41,12 +41,36 @@
 @animation-swift-out:   .45s cubic-bezier(0.3, 1, 0.4, 1) 0s;
 
 //
+// Constants
+// -----------------------------------------------------------------------------
+
+@menu-width: 250px;
+@left-margin: 5%;
+
+//
 // reusable classes
 // -----------------------------------------------------------------------------
-.content-margin {
-    margin-top: 75px;
+.content-width {
+    width: 100%;
 }
 
 .box-border {
   border: 2px solid #789;
+}
+
+.page-margin {
+    width: 1000px;
+    position: static;
+    padding-top: 75px;
+    //padding-left: @left-margin;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hide {
+  display: none;
+}
+
+.bottom {
+  bottom: 0px;
 }

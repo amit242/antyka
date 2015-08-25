@@ -3,7 +3,7 @@
 import React from 'react';
 import styles from './Header.less';
 import withStyles from '../../decorators/withStyles';
-import Link from '../../utils/Link';
+import { Link } from 'react-router';
 import Navigation from '../Navigation';
 
 @withStyles(styles)
@@ -14,9 +14,9 @@ class Header {
     return (
       <div className="Header">
         <div className="Header-container">
-          <a className="Header-brand" href="/" onClick={Link.handleClick}>
+          <Link className="Header-brand" to="/">
             <img className="Header-brandImg" src={require('./Closyaar-logo-medium.png')} width="114" height="62" alt="closyaar" />
-          </a>
+          </Link>
           <Navigation className="Header-nav" {...this.props.isLoggedIn}/>
           <div className="Header-banner">
 

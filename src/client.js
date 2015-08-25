@@ -31,9 +31,11 @@ function run() {
   });
   RouterContainer.set(router);
 
+  console.log('Client.run()| Path:', window.location, window.location.search);
   let jwt = localStorage.getItem('closyaar-jwt');
   console.log('Client.run()| localStorage jwt:',jwt);
   let tryingLogin = false;
+
   if (jwt) {
     tryingLogin = true;
     LoginAction.loginUser(jwt);

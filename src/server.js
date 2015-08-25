@@ -190,7 +190,7 @@ apiRoutes.post('/authenticate', function(req, res) {
         let expires = expiresInMins(minExpire);
 
         let signObj = {
-          user: user.userid,
+          userid: user.userid,
           name: user.name,
           id: user._id,
           expires: expires // this acts a token differentiator
@@ -291,12 +291,37 @@ apiRoutes.use(function(req, res, next) {
 
 apiRoutes.get('/verify', function(req, res) {
   console.log('Server.apiRoutes() REST Call to /verify:', req.decoded);
+  let mongoDBUserId = req.decoded.id;
   let validUser = {
     verified: true,
-    user: req.decoded.user,
-    name: req.decoded.name
+    user: req.decoded
   }
-  res.json(validUser);
+  return res.status(200).json(validUser);
+  
+  // userModel.findOne({
+  //   _id: mongoDBUserId
+  // }, function(err, user) {
+
+  //   if (err) {
+  //     console.log('server.REST.POST.changepassword()| DB error:', err);
+  //     return res.status(403).json({ success: false, message: 'user verification failed. database exception.' });
+  //   }
+
+  //   if (!user) {
+  //     return res.status(403).json({ success: false, message: 'user verification failed. User not found.' });
+  //   } else if (user) {
+
+  //     console.log('server.REST.POST.changepassword()| User found:', user);
+  //     user.password = null;
+  //     let validUser = {
+  //       verified: true,
+  //       user: user
+  //     }
+  //     return res.status(200).json(validUser);
+  //   }
+  // });
+
+  
 });
 
 apiRoutes.get('/verifyusertoken', function(req, res) {
@@ -356,6 +381,7 @@ server.get('*', async (req, res, next) => {
   let dt = new Date();
   console.log('=============================================');
   console.log('server.server.get()| render start...', dt.getHours() + ':' + dt.getMinutes() + ':' + dt.getSeconds() + ':' +  dt.getMilliseconds());
+  console.log('server.server.get()| req query string==>', req.query);
   try {
     let isMobile = ClientDetection.isMobile(req.headers['user-agent']);
     // console.log('Serverjs AMIT: isMobile:', isMobile);
@@ -394,7 +420,7 @@ server.get('*', async (req, res, next) => {
           <Route name="home" handler={HomePage}/>
       </Route>
     );*/
-    console.log('server.server.get()| req.url:', req.url);
+    console.log('server.server.get()| req.url:', req.params);
     var router = Router.create({
       location: req.url,
       routes: appRoutes,
@@ -403,8 +429,8 @@ server.get('*', async (req, res, next) => {
         console.log('server.Router.create().onAbort()| instance of ', abortReason.constructor.name);
         if (abortReason.constructor.name === 'Redirect') {
           let url = this.makePath(abortReason.to, abortReason.params, abortReason.query);
-
-          console.log('server.Router.create().onAbort()| url: [', url, '] requrl:', req.url);
+          url +='?redirect=' + abortReason.query;
+          console.log('server.Router.create().onAbort()| url: [', url, '] q:', abortReason.params);
           res.redirect(url);
           
         } else {

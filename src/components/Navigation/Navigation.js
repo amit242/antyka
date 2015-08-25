@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import styles from './Navigation.less';
 import withStyles from '../../decorators/withStyles';
 import AuthService from '../../services/AuthService';
+import { Link } from 'react-router';
 //import Link from '../../utils/Link';
 
 @withStyles(styles)
@@ -23,12 +24,14 @@ class Navigation {
   	console.log('Navigation.render()| props:', this.props);
   	let navContent;
     if(this.props.userLoggedIn) {
-      navContent = <a href="" className="Navigation-link" onClick={this.logout}>Logout</a>;
+      navContent = <a href="" className="navigation-link" onClick={this.logout}>Logout</a>;
     }
     return (
-      <div className={classNames(this.props.className, 'Navigation')} role="navigation">
-        {this.props.userLoggedIn && <div>Welcome {this.props.user.name}</div>}
-        {navContent}
+      <div className={classNames(this.props.className, 'navigation')} role="navigation">
+        <div className="navigation-container">
+          {this.props.userLoggedIn && <div>Welcome <Link className="navigation-link" to="/">{this.props.user.name}</Link></div>}
+          {navContent}
+        </div>
       </div>
     );
   }

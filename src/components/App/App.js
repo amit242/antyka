@@ -74,7 +74,7 @@ export default class App extends React.Component {
         <Header isLoggedIn={this._getLoginState()}/>
         <RouteHandler user={this._getLoginState().user}/>
         <Feedback />
-        <Footer />
+        <Footer isLoggedIn={this._getLoginState()}/>
       </div>);
   }
 }
