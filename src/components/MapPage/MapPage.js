@@ -26,7 +26,8 @@ class MapPage extends React.Component {
       position: {
         lat: '',
         lng: ''
-      }
+      },
+      drawMode : false
     };
   }
 
@@ -78,6 +79,10 @@ class MapPage extends React.Component {
     });
   }
 
+  drawNeighborhood(event) {
+    this.setState({drawMode: !this.state.drawMode});
+  }
+
   _onchange(event) {
     //console.log('RegisterPage._onchange()| event:', event.target);
     let controlState = {};
@@ -101,9 +106,9 @@ class MapPage extends React.Component {
           <input type="button" value="Find my current location" onClick={this.findCurrentLocation.bind(this)} />
           <TextBox id="address" className="RegisterPage-textbox" ref="address" value={this.state.address} type="text" placeholder="address" maxLines={3} onChange={this._onchange.bind(this)}/>
           <input type="button" value="Find my address" onClick={this.findLocationByAddress.bind(this)} />
-          
+          <input type="button" value={this.state.drawMode ? "Remove Neighborhood": "Draw Neighborhood"} onClick={this.drawNeighborhood.bind(this)} />
         </div>
-        <Map position={this.state.position}/>
+        <Map position={this.state.position} drawMode={this.state.drawMode}/>
       </div>
     );
   }
