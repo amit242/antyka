@@ -129,12 +129,16 @@ class Map extends Component {
       });
       google.maps.event.addListener(newShape.getPath(), 'set_at', function(event) {
           console.debug("overlay edit set_at:", event, newShape.getPath().getArray());
-          _this.findSelfIntersectsAndShowError(newShape);
+          if(!_this.findSelfIntersectsAndShowError(newShape)) {
+            _this.findIntersectsAndShowError(newShape);
+          }
       });
 
       google.maps.event.addListener(newShape.getPath(), 'insert_at', function(event) {
           console.log("overlay edit insert_at:", event);
-          _this.findSelfIntersectsAndShowError(newShape);
+          if(!_this.findSelfIntersectsAndShowError(newShape)) {
+            _this.findIntersectsAndShowError(newShape);
+          }
       });
 
       google.maps.event.addListener(newShape.getPath(), 'remove_at', function(event) {
