@@ -26,7 +26,7 @@ class UserMenu extends React.Component {
           <li><Link className="usermenu-link" to="/">Messages</Link></li>
           <li><Link className="usermenu-link" to="/">Closyaars</Link></li>
           <li><Link className="usermenu-link" to="map">Map</Link></li>
-          <li><Link className="usermenu-link" to="neighborhood">Neighborhood</Link></li>
+          <li><Link className="usermenu-link" to="neighbourhood">Neighbourhood</Link></li>
         </ul>
       </div>
     );

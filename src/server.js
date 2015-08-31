@@ -16,6 +16,7 @@ import App from './components/App';
 import ClientDetection from './utils/ClientDetection';
 import dbConfig from './database/config';
 import userModel from './models/user';
+import neighbourhoodModel from './models/neighbourhood';
 import Router, {Route} from 'react-router';
 import appRoutes from './routes/Routes';
 import LoginPage from './components/LoginPage';
@@ -78,6 +79,7 @@ function expiresInMins(minutes) {
 }
 // -----------------
 let apiRoutes = express.Router();
+
 // console.log('apiRoutes:', apiRoutes);
 apiRoutes.get('/', function(req, res) {
   res.json({ message: 'Welcome to the coolest API on earth!' });
@@ -188,6 +190,7 @@ apiRoutes.post('/authenticate', function(req, res) {
         // create a token
         let minExpire = 10; // expires in 10 min
         let expires = expiresInMins(minExpire);
+        
 
         let signObj = {
           userid: user.userid,
@@ -200,10 +203,12 @@ apiRoutes.post('/authenticate', function(req, res) {
         });
 
         // return the information including token as JSON
+        user.password = null;
+        //delete user.password;
         res.json({
           success: true,
           message: 'Login Success!',
-          name: user.name,
+          user: user,
           //expires: expires,
           token: token
         });
@@ -292,34 +297,34 @@ apiRoutes.use(function(req, res, next) {
 apiRoutes.get('/verify', function(req, res) {
   console.log('Server.apiRoutes() REST Call to /verify:', req.decoded);
   let mongoDBUserId = req.decoded.id;
-  let validUser = {
+  /*let validUser = {
     verified: true,
     user: req.decoded
   }
-  return res.status(200).json(validUser);
+  return res.status(200).json(validUser);*/
   
-  // userModel.findOne({
-  //   _id: mongoDBUserId
-  // }, function(err, user) {
+  userModel.findOne({
+    _id: mongoDBUserId
+  }, function(err, user) {
 
-  //   if (err) {
-  //     console.log('server.REST.POST.changepassword()| DB error:', err);
-  //     return res.status(403).json({ success: false, message: 'user verification failed. database exception.' });
-  //   }
+    if (err) {
+      console.log('server.REST.POST.changepassword()| DB error:', err);
+      return res.status(403).json({ success: false, message: 'user verification failed. database exception.' });
+    }
 
-  //   if (!user) {
-  //     return res.status(403).json({ success: false, message: 'user verification failed. User not found.' });
-  //   } else if (user) {
+    if (!user) {
+      return res.status(403).json({ success: false, message: 'user verification failed. User not found.' });
+    } else if (user) {
 
-  //     console.log('server.REST.POST.changepassword()| User found:', user);
-  //     user.password = null;
-  //     let validUser = {
-  //       verified: true,
-  //       user: user
-  //     }
-  //     return res.status(200).json(validUser);
-  //   }
-  // });
+      console.log('server.REST.POST.changepassword()| User found:', user);
+      user.password = null;
+      let validUser = {
+        verified: true,
+        user: user
+      }
+      return res.status(200).json(validUser);
+    }
+  });
 
   
 });
@@ -354,6 +359,68 @@ apiRoutes.get('/verifyusertoken', function(req, res) {
       }
     }
   });
+});
+
+apiRoutes.get('/neighbourhoods', function(req, res) {
+  // console.log('get users called');
+
+  neighbourhoodModel.find({}).exec(function(err, neighbourhoods) {
+    if(err) {
+      console.log('neighbourhoods mongoDB error:', err);
+      res.json({ success: false, message: 'Neighbourhoods not found.' });
+    } else {
+      console.log('getting neighbourhoods', neighbourhoods);
+      res.json({ success: true, neighbourhoods: neighbourhoods });
+    }
+  });
+  return res;
+});
+
+apiRoutes.post('/neighbourhood', function(req, res) {
+  // console.log('get users called');
+  let neighbourhood = JSON.parse(req.body.neighbourhood);
+  let userid = req.body.userid;
+  let neighbourhood_id = req.params.neighbourhood_id;
+  console.log('REST call: /neighbourhood -> neighbourhood: ', neighbourhood);
+
+  if(neighbourhood_id) {
+    console.log('REST call: /neighbourhood -> neighbourhood id:', neighbourhood_id);
+    neighbourhoodModel.findOne({
+      neighbourhoodid: neighbourhood_id
+    }).exec(function(err, neighbourhood) {
+      if(err) {
+       console.log('REST call: /neighbourhood -> neighbourhood mongoDB error:', err);
+       res.status(500).json({ success: false, message: 'Neighbourhood not found.' });
+      } else {
+        console.log('REST call: /neighbourhood -> updating neighbourhood', neighbourhood);
+
+        res.json(neighbourhood);
+      }
+      
+    });
+  } else {
+    console.log('REST call: /neighbourhood -> neighbourhood polygon: ', neighbourhood.encodedpolygon);
+    neighbourhood.createdby = userid;
+    neighbourhoodModel.create(neighbourhood, function(err, neighbourhood) {
+      if(err) {
+       console.log('REST call: /neighbourhood -> neighbourhood mongoDB error:', err);
+       res.status(500).json({ success: false, message: 'Could not create neighbourhood.' });
+      } else {
+        console.log('REST call: /neighbourhood -> neighbourhood created', neighbourhood);
+
+        let query = {_id: userid};
+          
+        userModel.findOneAndUpdate(query, { $set: { neighbourhood: neighbourhood._id }}, (updateError, numRow) => {
+          console.log('REST call: /neighbourhood ->  mongoDB update:', numRow, updateError);
+          if (updateError) {
+            res.status(500).json({ success: false, message: 'Neighbourhood created and user could not be set', neighbourhood: neighbourhood, error: updateError });
+          }
+          res.status(200).json({ success: true, message: 'Neighbourhood created and user updated successfully!!!', neighbourhood: neighbourhood});
+        });
+      }
+    });
+  }
+  return res;
 });
 
 apiRoutes.get('/users', function(req, res) {
@@ -456,7 +523,7 @@ server.get('*', async (req, res, next) => {
         onInsertCss: value => css.push(value),
         onSetTitle: value => {data.title = value; },
         onSetMeta: (key, value) => data[key] = value,
-        onPageNotFound: () => notFound = true
+        onPageNotFound: () => {notFound = true;console.log('PAGE NOT FOUND!!!!');}
       }} />);
       data.css = css.join('');
       let html = template(data);

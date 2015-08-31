@@ -65,16 +65,17 @@ export default class App extends React.Component {
 
     if(this._getLoginState() && this._getLoginState().userLoggedIn) {
       console.log('App.Render()| user logged in...');
+
     } else {
       console.log('App.Render()| user NOT logged in...');
     }
     
     return (
       <div className="app-container">
-        <Header isLoggedIn={this._getLoginState()}/>
+        <Header LoginState={this._getLoginState()}/>
         <RouteHandler user={this._getLoginState().user}/>
         <Feedback />
-        <Footer isLoggedIn={this._getLoginState()}/>
+        <Footer LoginState={this._getLoginState()}/>
       </div>);
   }
 }

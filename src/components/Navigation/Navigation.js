@@ -23,13 +23,13 @@ class Navigation {
   render() {
   	console.log('Navigation.render()| props:', this.props);
   	let navContent;
-    if(this.props.userLoggedIn) {
+    if(this.props.LoginState.userLoggedIn) {
       navContent = <a href="" className="navigation-link" onClick={this.logout}>Logout</a>;
     }
     return (
       <div className={classNames(this.props.className, 'navigation')} role="navigation">
         <div className="navigation-container">
-          {this.props.userLoggedIn && <div>Welcome <Link className="navigation-link" to="/">{this.props.user.name}</Link></div>}
+          {this.props.LoginState && this.props.LoginState.userLoggedIn && <div>Welcome <Link className="navigation-link" to="/">{this.props.LoginState.user.name}</Link></div>}
           {navContent}
         </div>
       </div>

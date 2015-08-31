@@ -5,6 +5,7 @@ import withStyles from '../../decorators/withStyles';
 import withAuthentication from '../../decorators/withAuthentication';
 import TextBox from '../TextBox';
 import Map from '../Map';
+import NeighbourhoodService from '../../services/NeighbourhoodService';
 // import Link from '../../utils/Link';
 // import AppActions from '../../actions/AppActions';
 // import AuthService from '../../auth/AuthService';
@@ -27,8 +28,24 @@ class MapPage extends React.Component {
         lat: '',
         lng: ''
       },
+      neighbourhood: null,
+      googleMapLoaded: false,
       drawMode : false
     };
+  }
+
+  componentDidMount(rootNode) {
+    console.log('MapPage.componentDidMount()| googleMapLoaded:', googleMapLoaded);
+    this.checkIfGoogleMapLoaded();
+  }
+
+  checkIfGoogleMapLoaded() {
+    console.log('MapPage.componentDidMount()| checkIfGoogleMapLoaded:', googleMapLoaded);
+    if(!googleMapLoaded) { // check if google map was loaded
+        setTimeout(this.checkIfGoogleMapLoaded.bind(this), 50);//wait 50 millisecnds then recheck
+        return;
+    }
+    this.setState({googleMapLoaded: true});
   }
 
   // shouldComponentUpdate(nextProps, nextStates) {
@@ -79,8 +96,23 @@ class MapPage extends React.Component {
     });
   }
 
-  drawNeighborhood(event) {
+  drawNeighbourhood(event) {
     this.setState({drawMode: !this.state.drawMode});
+    if(this.state.drawMode) {
+      this.setState({neighbourhood: null});
+    }
+  }
+
+  saveNeighbourhood(event) {
+    console.log('saveNeighbourhood()|', this.state.neighbourhood);
+    NeighbourhoodService.saveNeighbourhood({encodedpolygon: this.state.neighbourhood.encodedpolygon}, this.props.user.id, (error) => {
+      alert(error);
+    });
+  }
+
+  onNeighbourhoodChange(event) {
+    console.log('MapPage.onNeighbourhoodChange()|', arguments[0]);
+    this.setState({neighbourhood: arguments[0]});
   }
 
   _onchange(event) {
@@ -94,21 +126,28 @@ class MapPage extends React.Component {
   }
 
   render() {
-    //console.log('MapPage.render()| state:', this.state);
-    let title = this.props.user.name;
-    this.context.onSetTitle(title);
+    console.debug('MapPage.render()| state:', this.props);
+    //let title = this.props.user.name;
+    this.context.onSetTitle('Map');
     return (
       <div className="mappage">
+        {this.state.neighbourhood && !this.state.neighbourhood.isValid && <span className="mappage-floating bottom error">{this.state.neighbourhood.errorMsg}</span>}
         <div className="mappage-floating">
           {/*<TextBox id="lat" className="mappage-TextBox" ref="lat" value={this.state.lat} type="text" placeholder="Latitude" onChange={this._onchange.bind(this)} />
           <TextBox id="lng"className="mappage-TextBox" ref="lng" value={this.state.lng} type="text" placeholder="Longitude" onChange={this._onchange.bind(this)} />
           <input type="button" value="Find Location" onClick={this.findLocation.bind(this)} />*/}
-          <input type="button" value="Find my current location" onClick={this.findCurrentLocation.bind(this)} />
-          <TextBox id="address" className="RegisterPage-textbox" ref="address" value={this.state.address} type="text" placeholder="address" maxLines={3} onChange={this._onchange.bind(this)}/>
-          <input type="button" value="Find my address" onClick={this.findLocationByAddress.bind(this)} />
-          <input type="button" value={this.state.drawMode ? "Remove Neighborhood": "Draw Neighborhood"} onClick={this.drawNeighborhood.bind(this)} />
+          {!this.state.drawMode && <div>
+            <input type="button" value="Draw Neighbourhood" onClick={this.drawNeighbourhood.bind(this)} />
+            <input type="button" value="Find my current location" onClick={this.findCurrentLocation.bind(this)} />
+            <TextBox id="address" className="RegisterPage-textbox" ref="address" value={this.state.address} type="text" placeholder="address" maxLines={3} onChange={this._onchange.bind(this)}/>
+            <input type="button" value="Find my address" onClick={this.findLocationByAddress.bind(this)} />
+          </div>}
+          {this.state.drawMode && <div>
+            <input type="button" value="Remove drawing and start over" disabled={!this.state.neighbourhood} onClick={this.drawNeighbourhood.bind(this)} />
+            <input type="button" value="Save Neighbourhood" disabled={!(this.state.neighbourhood && this.state.neighbourhood.isValid)} onClick={this.saveNeighbourhood.bind(this)} />
+          </div>}
         </div>
-        <Map position={this.state.position} drawMode={this.state.drawMode}/>
+        {this.state.googleMapLoaded && <Map position={this.state.position} drawMode={this.state.drawMode} onNeighbourhoodChange={this.onNeighbourhoodChange.bind(this)}/>}
       </div>
     );
   }

@@ -1,6 +1,6 @@
 
 import React, { PropTypes } from 'react';
-import styles from './NeighborhoodPage.less';
+import styles from './NeighbourhoodPage.less';
 import withStyles from '../../decorators/withStyles';
 import withAuthentication from '../../decorators/withAuthentication';
 import UserMenu from '../UserMenu';
@@ -13,30 +13,31 @@ import { Link } from 'react-router';
 @withAuthentication
 @withStyles(styles)
 
-class NeighborhoodPage extends React.Component {
+class NeighbourhoodPage extends React.Component {
   static contextTypes = {
     onSetTitle: PropTypes.func.isRequired,
     onPageNotFound: PropTypes.func.isRequired
   };
   render() {
+    console.log('NeighbourhoodPage.render()|', this.props);
     let title = this.props.user.name;
-    let hasNeighborhood;
-    if(this.props.user.neighborhood) {
-      hasNeighborhood = true;
+    let hasNeighbourhood;
+    if(this.props.user.neighbourhood) {
+      hasNeighbourhood = true;
     }
     this.context.onSetTitle(title);
     return (
-      <div className="neighborhood">
+      <div className="neighbourhood">
         <UserMenu />
-        {hasNeighborhood ? 
+        {hasNeighbourhood ? 
           (
-            <div className="neighborhood-container">Details of your neighborhood will come up here </div>
-          ) : (<div className="neighborhood-container">
+            <div className="neighbourhood-container">Details of your neighbourhood will come up here </div>
+          ) : (<div className="neighbourhood-container">
           <span>Hi {this.props.user.name},</span>
-          <p>You have not entered your neighborhood details yet. Please go to the <Link to="map">map</Link> and select/create your neighborhood</p>
+          <p>You have not entered your neighbourhood details yet. Please go to the <Link to="map">map</Link> and select/create your neighbourhood</p>
           <br/>
           <p>Your current address:</p>
-          <TextBox id="address" className="neighborhood-textarea" ref="address" value={this.props.user.address} type="text" placeholder="address" maxLines={3}/>
+          <TextBox id="address" className="neighbourhood-textarea" ref="address" value={this.props.user.address} type="text" placeholder="address" maxLines={3}/>
         </div>)
         }
       </div>
@@ -44,4 +45,4 @@ class NeighborhoodPage extends React.Component {
   }
 }
 
-export default NeighborhoodPage;
+export default NeighbourhoodPage;

@@ -53,7 +53,7 @@ export default class LoginPage extends React.Component {
     //LoginStore.addChangeListener(this.changeListener);
     console.log('SetPassword.componentDidMount()| query: ', this.props.query);
     if(this.props.query && this.props.query.key) {
-      LoginAction.verifyJWT(this.props.query.key);
+      LoginAction.verifyUserToken(this.props.query.key);
     } else {
     }
   }

@@ -1,0 +1,6 @@
+{
+  "name": "NeighbourhoodPage",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./NeighbourhoodPage.js"
+}

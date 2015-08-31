@@ -15,9 +15,10 @@ class NotFoundPage {
   render() {
     let title = 'Page Not Found';
     this.context.onSetTitle(title);
+    console.log('NotFoundPage.render()');
     this.context.onPageNotFound();
     return (
-      <div>
+      <div className="notfound">
         <h1>{title}</h1>
         <p>Sorry, but the page you were trying to view does not exist.</p>
       </div>

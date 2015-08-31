@@ -17,7 +17,7 @@ class Header {
           <Link className="Header-brand" to="/">
             <img className="Header-brandImg" src={require('./Closyaar-logo-medium.png')} width="114" height="62" alt="closyaar" />
           </Link>
-          <Navigation className="Header-nav" {...this.props.isLoggedIn}/>
+          <Navigation className="Header-nav" {...this.props}/>
           <div className="Header-banner">
 
           </div>

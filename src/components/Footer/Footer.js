@@ -51,18 +51,16 @@ class Footer {
           <span className="Footer-spacer"> | </span>
           <span ref="viewport" className="Footer-viewport Footer-text Footer-text--muted">{viewportString}</span>
           <span className="Footer-spacer">|</span>
-          <a className="Footer-link" href="/" onClick={Link.handleClick}>Home</a>
+          <Link className="Footer-link" to="/">Home</Link>
           
-          {!this.props.isLoggedIn.userLoggedIn && (<span className="Footer-spacer">·</span>)}
-          {!this.props.isLoggedIn.userLoggedIn && (<Link className="Footer-link" to="login">Log in</Link>)}
-          {width > 580 && (<span className="Footer-spacer">·</span>)}
-          {width > 580 && (<a className="Footer-link" href="/not-found" onClick={Link.handleClick}>Not Found</a>)}
+          {!this.props.LoginState.userLoggedIn && (<span className="Footer-spacer">·</span>)}
+          {!this.props.LoginState.userLoggedIn && (<Link className="Footer-link" to="login">Log in</Link>)}
           {width > 350 && (<span className="Footer-spacer"> | </span>)}
-          {width > 350 && (<a className="Footer-link" href="/about" onClick={Link.handleClick}>About</a>)}
+          {width > 350 && (<Link className="Footer-link" to="about">About</Link>)}
           {width > 420 && (<span className="Footer-spacer">·</span>)}
-          {width > 420 && (<a className="Footer-link" href="/contact" onClick={Link.handleClick}>Contact</a>)}
+          {width > 420 && (<Link className="Footer-link" to="contact">Contact</Link>)}
           {width > 480 && (<span className="Footer-spacer">·</span>)}
-          {width > 480 && (<a className="Footer-link" href="/privacy" onClick={Link.handleClick}>Privacy</a>)}
+          {width > 480 && (<Link className="Footer-link" to="privacy">Privacy</Link>)}
         </div>
       </div>
     );
@@ -75,8 +73,8 @@ class Footer {
           <span className="Footer-spacer">|</span>
           <a className="Footer-link" href="/" onClick={Link.handleClick}>Home</a>
           
-          {!this.props.isLoggedIn.userLoggedIn && (<span className="Footer-spacer">·</span>)}
-          {!this.props.isLoggedIn.userLoggedIn && (<Link className="Footer-link" to="login">Log in</Link>)}
+          {!this.props.LoginState.userLoggedIn && (<span className="Footer-spacer">·</span>)}
+          {!this.props.LoginState.userLoggedIn && (<Link className="Footer-link" to="login">Log in</Link>)}
           <span className="Footer-spacer">·</span>
           <a className="Footer-link" href="/not-found" onClick={Link.handleClick}>Not Found</a>
           <span className="Footer-spacer"> | </span>

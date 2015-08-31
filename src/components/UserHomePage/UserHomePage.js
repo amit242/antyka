@@ -25,7 +25,7 @@ class UserHomePage extends React.Component {
       <div className="userhome">
         <UserMenu />
         <div className="userhome-container">
-        <Link to="neighborhood">Go to your neighbourhood</Link>
+        <Link to="neighbourhood">Go to your neighbourhood</Link>
         
           <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean consequat
   tortor fermentum mi fermentum dignissim. Nullam vel ipsum ut ligula elementum

@@ -24,11 +24,13 @@
       ga('create','UA-XXYXX-X', 'auto');ga('send','pageview');
     </script-->
     <script async
-      src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyCE_9B6FSU3gOJFL9R7KEvugp_ExV9jBJE&libraries=drawing&callback=initMap">
+      src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyCE_9B6FSU3gOJFL9R7KEvugp_ExV9jBJE&libraries=drawing,geometry&callback=initMap">
     </script>
     <script type="text/javascript">
+    var googleMapLoaded = false;
     function initMap() {
       console.log('initMap()| map loaded...');
+      googleMapLoaded = true;
     }
     </script>
   </body>

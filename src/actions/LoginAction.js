@@ -5,33 +5,21 @@ import http from 'superagent';
 
 let jwtKey = 'closyaar-jwt';
 export default {
-  loginUser: (jwt) => {
+  loginUser: (jwt, user) => {
     console.log('LoginAction.loginUser()| supplied jwt:', jwt);
 
     if(jwt) {
-      http.get('/api/verify')
-      .set('x-closyaar-access-token', jwt)
-      .end((err, response) => {
-        console.log('LoginAction. rest call|  err, response', err, response);
-        if(!err && response && response.body && response.body.verified) {
-          console.log('LoginAction.loginUser()| Authentication success!!!');
-          console.log('LoginAction.loginUser()| Saving jwt in localStorage for user...');
-          
-          localStorage.setItem(jwtKey, jwt);
-          // Send the action to all stores through the Dispatcher
-
-          Dispatcher.dispatch({
-            type: ActionTypes.LOGIN_USER,
-            jwt: jwt,
-            user: response.body.user
-          });
-        } else {
-          console.log('LoginAction.loginUser()| Authentication Fail!!!');
-        }
-        var nextPath = RouterContainer.get().getCurrentQuery() && RouterContainer.get().getCurrentQuery().nextPath || '/';
-        RouterContainer.get().transitionTo(nextPath);
-        console.log('LoginAction.loginUser()| nextPath:', nextPath);
+      
+      console.log('AuthService.verifyJWT()| Saving jwt in localStorage for user...');
+      localStorage.setItem(jwtKey, jwt);
+      // Send the action to all stores through the Dispatcher
+      Dispatcher.dispatch({
+        type: ActionTypes.LOGIN_USER,
+        jwt: jwt,
+        user: user
       });
+    } else {
+      console.log('LoginAction.loginUser()| Authentication Fail!!!');
     }
   },
 
@@ -51,16 +39,18 @@ export default {
     });
   },
 
-  verifyJWT: (jwt) => {
-    console.log('LoginAction.verifyJWT()| supplied jwt:', jwt);
+
+  // TODO: refator and move REST call to authservice.js
+  verifyUserToken: (jwt) => {
+    console.log('LoginAction.verifyUserToken()| supplied jwt:', jwt);
 
     if(jwt) {
       http.get('/api/verifyusertoken')
       .set('x-closyaar-access-token', jwt)
       .end((err, response) => {
-        console.log('LoginAction.verifyJWT() rest call|  response', response.body);
+        console.log('LoginAction.verifyUserToken() rest call|  response', response.body);
         if(!err && response && response.body && response.body.success) {
-          console.log('LoginAction.verifyJWT()| Authentication success!!!', response.body.user);
+          console.log('LoginAction.verifyUserToken()| Authentication success!!!', response.body.user);
           
           // Send the action to all stores through the Dispatcher
 
@@ -69,14 +59,14 @@ export default {
             user: response.body.user
           });
         } else {
-          console.log('LoginAction.verifyJWT()| Authentication Fail!!!');
+          console.log('LoginAction.verifyUserToken()| Authentication Fail!!!');
           Dispatcher.dispatch({
             type: ActionTypes.TOKEN_VERIFIED,
             user: {
               invalidToken: true
             }
           });
-          //console.log('LoginAction.verifyJWT()| Err:', err);
+          //console.log('LoginAction.verifyUserToken()| Err:', err);
         }
       });
     }

@@ -5,6 +5,8 @@ import styles from './LoginPage.less';
 import withStyles from '../../decorators/withStyles';
 import Login from '../Login';
 import RegisterPage from '../RegisterPage';
+import RouterContainer from '../../services/RouterContainer';
+import LoginStore from '../../stores/LoginStore';
 // import Link from '../../utils/Link';
 // import AppActions from '../../actions/AppActions';
 // import AuthService from '../../auth/AuthService';
@@ -15,8 +17,20 @@ export default class LoginPage {
     onSetTitle: PropTypes.func.isRequired
   };
 
+  componentWillUpdate() {
+    console.log('LoginPage.componentWillUpdate()|', LoginStore.isLoggedIn());
+    if(LoginStore.isLoggedIn()) {
+      console.log('LoginPage.componentWillUpdate()| RouterContainer.get().getCurrentQuery():', RouterContainer.get().getCurrentQuery());
+      var nextPath = RouterContainer.get().getCurrentQuery() && RouterContainer.get().getCurrentQuery().redirect || '/';
+      console.log('LoginPage.componentWillUpdate()| nextPath:', nextPath);
+      RouterContainer.get().transitionTo(nextPath);
+    }
+  }
+
   render() {
-    //console.log('amit', this);
+    
+    console.log('LoginPage.render()|', LoginStore.isLoggedIn());
+
     let title = 'Login to Closyaar';
     this.context.onSetTitle(title);
     return (

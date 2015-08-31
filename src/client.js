@@ -5,20 +5,11 @@ import appRoutes from './routes/Routes';
 import RouterContainer from './services/RouterContainer';
 import LoginAction from './actions/LoginAction';
 import ClientDetection from './utils/ClientDetection';
-// import LoginPage from './components/LoginPage';
-// import HomePage from './components/UserHomePage';
-// import RegisterPage from './components/RegisterPage';
+import AuthService from './services/AuthService';
 import AppActions from './actions/AppActions';
 import ActionTypes from './constants/ActionTypes';
 import FastClick from 'fastclick';
 
-/*var appRoutes = (
-  <Route handler={App}>
-      <Route name="login" handler={LoginPage}/>
-      <Route name="home" path="/" handler={HomePage}/>
-      <Route name="register" handler={RegisterPage}/>
-    </Route>
-);*/
 
 let path = decodeURI(window.location.pathname);
 function run() {
@@ -38,7 +29,7 @@ function run() {
 
   if (jwt) {
     tryingLogin = true;
-    LoginAction.loginUser(jwt);
+    AuthService.verifyJWT(jwt);
   }
 
   router.run(function (Handler) {
@@ -50,8 +41,8 @@ function run() {
         onSetTitle: value => {document.title = value; }
       }
     };
-    console.log('Client.run()|  react render props:', props);
-    React.render(<Handler { ...props } tryLogin = {tryingLogin}/>, document.getElementById('app'));
+    console.log('Client.router.run()|  react render props:', props, Handler.routes, Handler.getCurrentPathname());
+    React.render(<Handler { ...props } tryLogin = {tryingLogin} />, document.getElementById('app'));
   });
 
   dt = new Date();
@@ -59,6 +50,7 @@ function run() {
 }
 
 try {
+  console.log('promise client run:');
   Promise.all([
     new Promise((resolve) => {
       if (window.addEventListener) {

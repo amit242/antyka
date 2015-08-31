@@ -16,7 +16,7 @@ class LoginStore extends BaseStore {
   }
 
   _registerToActions(action) {
-    console.log('LoginStore._registerToActions()| dispatchToken:', action.type);
+    console.log('LoginStore._registerToActions()| dispatchToken:', action);
     switch(action.type) {
       case ActionTypes.LOGIN_USER:
         //console.log('AMIT LOGINSTORE: emitchange with jwt', action.jwt);
@@ -52,7 +52,7 @@ class LoginStore extends BaseStore {
   }
 
   isLoggedIn() {
-    console.log('LoginStore.isLoggedIn()| :', this._isloggedin);
+    //console.log('LoginStore.isLoggedIn()| :', this._isloggedin);
     return this._isloggedin;
   }
 }
