@@ -2,9 +2,9 @@ import React, { PropTypes, Component } from 'react';
 import classNames from 'classnames';
 import withStyles from '../../decorators/withStyles';
 import styles from './Map.less';
-import TextBox from '../TextBox';
+//import TextBox from '../TextBox';
 import AntykaGeometry from './AntykaGeometry';
-import { canUseDOM } from 'react/lib/ExecutionEnvironment';
+//import { canUseDOM } from 'react/lib/ExecutionEnvironment';
 import NeighbourhoodService from '../../services/NeighbourhoodService';
 import NeighbourhoodStore from '../../stores/NeighbourhoodStore';
 import _ from 'lodash';
@@ -13,12 +13,14 @@ import _ from 'lodash';
 class Map extends Component {
 
   static propTypes = {
-    position: PropTypes.instanceOf(Object).isRequired,
-    drawMode: PropTypes.bool.isRequired
+    position: PropTypes.instanceOf(Object),
+    drawMode: PropTypes.bool.isRequired,
+    onNeighbourhoodChange: React.PropTypes.func.isRequired,
+    className: PropTypes.string
   };
 
   static defaultProps = {
-    
+    position: null
   };
 
   constructor() {
@@ -29,86 +31,37 @@ class Map extends Component {
       existingPolygons: null,
       error: false,
       //neighbourhood: null,
-      map:null
+      map: null
     };
   }
 
-  renderExistingNeighbourhoods() {
-    let map = this.state.map;
-    if(map) {
-      console.debug('Rendering Existing Neighbourhoods...');
-      _.forEach(this.state.existingPolygons, (polygon) => {
-        polygon.setMap(map);
-      });
-    }
-    
-    //---------------------------------
-  }
-
-  _onNeighbourhoodStoreChange() {
-    this.loadExistingPolygons();
-  }
-
-  loadExistingPolygons() {
-    console.log('Map.loadExistingPolygons():');
-
-
-
-    let existingPolygons = [];
-    let encodedNeighbourhoods = NeighbourhoodStore.getNeighbourhoods();
-
-    _.forEach(encodedNeighbourhoods, (encodedNeighbourhood) => {
-      console.log('Map.loadExistingPolygons() encodedNeighbourhood:', encodedNeighbourhood, google.maps.geometry);
-      let decodedPath = google.maps.geometry.encoding.decodePath(encodedNeighbourhood.encodedpolygon);
-      console.log('Map.loadExistingPolygons() decodedNeighbourhood:', decodedPath);
-      let poly = new google.maps.Polygon({
-        paths: decodedPath,
-        strokeColor: '#008888',
-        strokeOpacity: 0.8,
-        strokeWeight: 2,
-        fillColor: '#FF0000',
-        fillOpacity: 0.35,
-        zIndex: 2
-      });
-      
-      existingPolygons.push(poly);
-    });
-    /*
-    let triangleCoords = [
-      {lat: 22.692646, lng: 88.380895},
-      {lat: 22.692646, lng: 88.373897},
-      {lat: 22.700649, lng: 88.373897},
-      {lat: 22.700649, lng: 88.380895}
-    ];
-
-    
-
-    let poly = new google.maps.Polygon({
-      paths: triangleCoords,
-      strokeColor: '#008888',
-      strokeOpacity: 0.8,
-      strokeWeight: 2,
-      fillColor: '#FF0000',
-      fillOpacity: 0.35,
-      zIndex: 2
-    });
-    existingPolygons.push(poly);*/
-
-    this.setState({existingPolygons: existingPolygons}) ;
+  // Life cycle methods
+  shouldComponentUpdate(nextProps, nextStates) {
+    console.log('shouldComponentUpdate() position:', this.props.position, nextProps.position, _.isEqual(this.props.position, nextProps.position));
+    console.log('shouldComponentUpdate() drawMode:', this.props.drawMode, nextProps.drawMode, this.props.drawMode !== nextProps.drawMode);
+    console.log('shouldComponentUpdate() existingPolygons:', this.state.existingPolygons, nextStates.existingPolygons, this.state.existingPolygons !== nextStates.existingPolygons);
+    //return this.props.position !== nextProps.position || this.props.drawMode !== nextProps.drawMode;
+    // TODO: need a more gracefull way to do this
+    return !_.isEqual(this.props.position, nextProps.position) || this.props.drawMode !== nextProps.drawMode || this.state.existingPolygons !== nextStates.existingPolygons;
   }
 
   componentWillUnmount() {
     NeighbourhoodStore.removeChangeListener(this.neighbourhoodStoreListener);
   }
 
-  componentDidMount(rootNode) {
-    console.log('Map.componentDidMount()| position:', this.props.position);
+  componentDidMount() {
+    console.log('Map.componentDidMount()| props:', this.props);
 
-    this.neighbourhoodStoreListener = this._onNeighbourhoodStoreChange.bind(this);
+    this.neighbourhoodStoreListener = this.onNeighbourhoodStoreChange.bind(this);
     NeighbourhoodStore.addChangeListener(this.neighbourhoodStoreListener);
-    
+
     NeighbourhoodService.findNeighbourhoodsByViewport();
 
+/*
+    if(this.props.user.neighbourhood) {
+      NeighbourhoodService.searchNeighbourhoodById(this.props.user.neighbourhood);
+    }
+*/
     let mapOptions = {
           center: {lat: -34.397, lng: 150.644},
           zoom: 15,
@@ -116,7 +69,7 @@ class Map extends Component {
           zoomControlOptions: {
               style: google.maps.ZoomControlStyle.LARGE,
               position: google.maps.ControlPosition.RIGHT_TOP
-          },
+          }
         };
     let map = new google.maps.Map(React.findDOMNode(this), mapOptions);
     let infoWindow = new google.maps.InfoWindow({map: map});
@@ -135,9 +88,9 @@ class Map extends Component {
       drawingControl: false,
       polygonOptions: {
           fillColor: '#FFFF00',
-          fillOpacity: 0.2,
+          fillOpacity: 0.1,
           strokeWeight: 1,
-          strokeColor:'#DD2200',
+          strokeColor: '#DD2200',
           clickable: true,
           editable: true,
           zIndex: 2
@@ -153,45 +106,90 @@ class Map extends Component {
 
 
     let _this = this;
-    google.maps.event.addListener(this.drawingManager, "overlaycomplete", function(event) {
-      //console.log('Overlay complete:', event);
-      console.debug('Overlay complete:', event.overlay.getPath().getArray());
-      let newShape = event.overlay;
-      _this.drawingManager.setDrawingMode(null);
-      //console.log('Overlay complete:', event.overlay.getPaths().getAt(0).getArray(), event.overlay.getPaths().getAt(0).getArray());
-      /*if(event.overlay.getPath().getArray().length <= 2) {
-        _this.handleMapError('This is not a neighbourhood. Remove this and try again...', newShape.getPath().getAt(0));
-        return;
-      }*/
-      
-      _this.validateShapeAndUpdate(newShape);
+    google.maps.event.addListener(this.drawingManager, 'overlaycomplete', function(e) {
+      //console.log('Overlay complete:', e);
+      console.debug('Overlay complete:', e.overlay.getPath().getArray());
+      let newShape = e.overlay;
+      this.drawingManager.setDrawingMode(null);
+
+      this.validateShapeAndUpdate(newShape);
 
       console.debug('Overlay complete polygon:', newShape);
-      _this.neighbourhood = newShape;
+      this.neighbourhood = newShape;
 
-      google.maps.event.addListener(newShape, 'click', function(event) {
-         console.log('overlay click:', event);
-      });
+      this.attachEventListenersToOverlayPolygon(newShape, true);
+    }.bind(this));
+
+    this.setState({map: map, infoWindow: infoWindow});
+    console.log('Map.componentDidMount end!!!');
+  }
+  // ...................
+
+  // supporting methods
+  attachEventListenersToOverlayPolygon(newShape, editable) {
+    google.maps.event.addListener(newShape, 'click', function(event) {
+      console.log('overlay click:', event);
+    });
+    if(editable) {
+      let _this = this;
       google.maps.event.addListener(newShape.getPath(), 'set_at', function(event) {
-        console.debug("overlay edit set_at:", event, newShape.getPath().getArray());
-         _this.validateShapeAndUpdate(newShape);
+        console.debug('overlay edit set_at:', event, newShape.getPath().getArray());
+        _this.validateShapeAndUpdate(newShape);
       });
 
       google.maps.event.addListener(newShape.getPath(), 'insert_at', function(event) {
-        console.log("overlay edit insert_at:", event);
-         _this.validateShapeAndUpdate(newShape);
+        console.log('overlay edit insert_at:', event);
+        _this.validateShapeAndUpdate(newShape);
       });
 
       google.maps.event.addListener(newShape.getPath(), 'remove_at', function(event) {
-        console.log("overlay edit remove_at:", event);
-         _this.validateShapeAndUpdate(newShape);
+        console.log('overlay edit remove_at:', event);
+        _this.validateShapeAndUpdate(newShape);
       });
-     // setSelection(newShape);
-    //});
-    });
-    
-    this.setState({map: map, infoWindow: infoWindow});
-    console.log('Map.componentDidMount end!!!');
+    }
+  }
+
+  renderExistingNeighbourhoods() {
+    let map = this.state.map;
+    if(map) {
+      console.debug('Rendering Existing Neighbourhoods...');
+      _.forEach(this.state.existingPolygons, (polygon) => {
+        polygon.setMap(map);
+      });
+    }
+  }
+
+  onNeighbourhoodStoreChange() {
+    this.loadExistingPolygons();
+  }
+
+  loadExistingPolygons() {
+    console.log('Map.loadExistingPolygons():');
+
+    let existingPolygons = [];
+    let encodedNeighbourhoods = NeighbourhoodStore.getNeighbourhoods();
+    let ownNeighbourhood = this.props.user.neighbourhood;
+
+    _.forEach(encodedNeighbourhoods, (encodedNeighbourhood) => {
+      console.log('Map.loadExistingPolygons() encodedNeighbourhood:', encodedNeighbourhood, google.maps.geometry);
+      let decodedPath = google.maps.geometry.encoding.decodePath(encodedNeighbourhood.encodedpolygon);
+      console.log('Map.loadExistingPolygons() decodedNeighbourhood:', decodedPath);
+      let userNeighbourhood = ownNeighbourhood && ownNeighbourhood === encodedNeighbourhood._id;
+      let poly = new google.maps.Polygon({
+        paths: decodedPath,
+        strokeColor: '#008888',
+        strokeOpacity: 0.5,
+        strokeWeight: 2,
+        fillColor: userNeighbourhood ? '#00FF00' : '#FF6600',
+        fillOpacity: 0.1,
+        zIndex: 2,
+        editable: userNeighbourhood
+      });
+      this.attachEventListenersToOverlayPolygon(poly, userNeighbourhood);
+      existingPolygons.push(poly);
+    }.bind(this));
+
+    this.setState({existingPolygons: existingPolygons});
   }
 
   findPolygonCenter(path) {
@@ -204,8 +202,7 @@ class Map extends Component {
 
   validateShapeAndUpdate(newShape) {
     let isValid = false;
-    
-    
+
     if(!this.findSelfIntersectsAndShowError(newShape) && !this.findIntersectsAndShowError(newShape) && this.validNeighbourhoodArea(newShape)) {
       isValid = true;
     }
@@ -221,7 +218,6 @@ class Map extends Component {
 
   validNeighbourhoodArea(newShape) {
     let area = google.maps.geometry.spherical.computeArea(newShape.getPath());
-    
     console.log('Map.validNeighbourhoodArea()| area of polygon:', area);
     if(area > 250000 || area < 1000)
     {
@@ -236,39 +232,37 @@ class Map extends Component {
 
   findIntersectsAndShowError(inputShape) {
     let geometry = new AntykaGeometry();
-    console.log('findIntersectsAndShowError():' );
+    console.log('findIntersectsAndShowError():', inputShape);
     let hasIntersection = false;
     _.forEach(this.state.existingPolygons, (existingPolygon) => {
-      let intersection = geometry.isIntersectingPolygon(inputShape.getPath(), existingPolygon.getPath());
-      if(intersection) {
-        let pos = new google.maps.LatLng(parseFloat(intersection[0].x),parseFloat(intersection[0].y));
-        console.debug('AMIT:', intersection, pos);
-        this.handleMapError('Your neighbourhood can not overlap with existing neighbourhoods, please retry or modify this...', pos);
-        hasIntersection = true;
-        return;
+      console.log('findIntersectsAndShowError():', _.isEqual(inputShape, existingPolygon));
+      if(!_.isEqual(inputShape, existingPolygon)) {
+        let intersection = geometry.isIntersectingPolygon(inputShape.getPath(), existingPolygon.getPath());
+        if(intersection) {
+          let pos = new google.maps.LatLng(parseFloat(intersection[0].x), parseFloat(intersection[0].y));
+          console.debug('AMIT:', intersection, pos);
+          this.handleMapError('Your neighbourhood can not overlap with existing neighbourhoods, please retry or modify this...', pos);
+          hasIntersection = true;
+          return;
+        }
       }
     });
     return hasIntersection;
   }
-  
+
   findSelfIntersectsAndShowError(inputShape) {
     let geometry = new AntykaGeometry();
 
     let intersections = geometry.findSelfIntersects(inputShape.getPath());
 
     //console.log("findSelfIntersectsAndShowError() Patharray:", inputShape.getPath().getArray());
-    console.log("findSelfIntersectsAndShowError() intersections:", intersections);
-    
+    console.log('findSelfIntersectsAndShowError() intersections:', intersections);
 
     if(intersections) {
-      //offenderVertex = offenderVertex ? inputShape.getPath().getArray()[offenderVertex] : inputShape.getPath().getArray()[0];
-      let pos = new google.maps.LatLng(parseFloat(intersections[0][0]),parseFloat(intersections[0][1]));
-      console.debug('AMIT:', intersections, pos);
+      let pos = new google.maps.LatLng(parseFloat(intersections[0][0]), parseFloat(intersections[0][1]));
       this.handleMapError('A self interescting polygon can not be a neighbourhood, please retry or modify this...', pos);
       return true;
-      //newShape.setMap(null);
     } else {
-
       let infoWindow = this.state.infoWindow;
       infoWindow.close();
       return false;
@@ -292,33 +286,22 @@ class Map extends Component {
   }
 
   handleLocationError(browserHasGeolocation) {
-    
     let msg = browserHasGeolocation ?
                         'Error: The Geolocation service failed.' :
                         'Error: Your browser doesn\'t support geolocation.';
     this.handleMapError(msg);
   }
 
-
-
-  shouldComponentUpdate(nextProps, nextStates) {
-    console.log('shouldComponentUpdate() position:', this.props.position, nextProps.position, this.props.position !== nextProps.position);
-    console.log('shouldComponentUpdate() drawMode:', this.props.drawMode, nextProps.drawMode, this.props.drawMode !== nextProps.drawMode);
-    console.log('shouldComponentUpdate() existingPolygons:', this.state.existingPolygons, nextStates.existingPolygons, this.state.existingPolygons !== nextStates.existingPolygons);
-    //return this.props.position !== nextProps.position || this.props.drawMode !== nextProps.drawMode;
-    return this.props.position !== nextProps.position || this.props.drawMode !== nextProps.drawMode || this.state.existingPolygons !== nextStates.existingPolygons;
-  }
-
   findAndSetLocation(lat, lng, showInfo, msg) {
     let map = this.state.map;
     if(map) {
-      let pos = new google.maps.LatLng(parseFloat(lat),parseFloat(lng));
+      let pos = new google.maps.LatLng(parseFloat(lat), parseFloat(lng));
       map.setCenter(pos);
       if(showInfo) {
         let infoWindow = this.state.infoWindow;//new google.maps.InfoWindow({map: map});
         infoWindow.setPosition(pos);
         if(!msg) {
-          infoWindow.setContent('Location: (lat,long)=('+lat+', '+lng+')');
+          infoWindow.setContent('Location: (lat,long)=(' + lat + ', ' + lng + ')');
         } else {
           infoWindow.setContent(msg);
         }
@@ -327,7 +310,6 @@ class Map extends Component {
         {
           infoWindow.open(map);
         }
-        
       }
     }
   }
@@ -335,32 +317,32 @@ class Map extends Component {
   closeInfoWindow() {
     if(this.state.infoWindow && this.isInfoWindowOpen(this.state.infoWindow)) {
       this.state.infoWindow.close();
-    } 
+    }
   }
 
   isInfoWindowOpen(infoWindow){
     let map = infoWindow.getMap();
-    return (map !== null && typeof map !== "undefined");
+    return (map !== null && typeof map !== 'undefined');
   }
 
   findCurrentGeoLocation() {
-    //let _this = this;
+    let _this = this;
     if (navigator.geolocation) { // Try HTML5 geolocation.
       navigator.geolocation.getCurrentPosition((position) => {
+        console.debug('Map.findCurrentGeoLocation()| Current position:', position);
         let lat = position.coords.latitude;
         let lng = position.coords.longitude;
         this.findAndSetLocation(lat, lng, true, 'We\'ve found your location.(lat,long)=(' + lat + ', ' + lng + ')');
       }, function() {
-        this.handleLocationError(true);
-      })
+        _this.handleLocationError(true);
+      });
     } else {
       this.handleLocationError(false);
     }
   }
 
-
   render() {
-    console.log('Map.render()| position:', this.props.position);
+    console.log('Map.render()| props:', this.props);
     console.log('Map.render()| states:', this.state);
 
     //let map = this.state.map;
@@ -375,7 +357,8 @@ class Map extends Component {
       if(this.neighbourhood) {
         this.neighbourhood.setMap(null);
         this.closeInfoWindow();
-      } 
+      }
+
       if(this.props.position && this.props.position.lat && this.props.position.lng) {
         console.log('Map.render()| Has position:', this.props.position.lat, this.props.position.lng);
         this.findAndSetLocation(this.props.position.lat, this.props.position.lng, true);

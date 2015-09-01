@@ -362,56 +362,68 @@ apiRoutes.get('/verifyusertoken', function(req, res) {
 });
 
 apiRoutes.get('/neighbourhoods', function(req, res) {
-  // console.log('get users called');
-
   neighbourhoodModel.find({}).exec(function(err, neighbourhoods) {
     if(err) {
-      console.log('neighbourhoods mongoDB error:', err);
-      res.json({ success: false, message: 'Neighbourhoods not found.' });
+      console.log('GET: /neighbourhoods -> mongoDB error:', err);
+      res.status(404).json({ success: false, message: 'Neighbourhoods not found.' });
     } else {
-      console.log('getting neighbourhoods', neighbourhoods);
+      console.log('GET: /neighbourhoods -> fetched neighbourhoods:', neighbourhoods);
       res.json({ success: true, neighbourhoods: neighbourhoods });
     }
   });
   return res;
 });
 
-apiRoutes.post('/neighbourhood', function(req, res) {
+apiRoutes.get('/neighbourhood/:neighbourhood_id', function(req, res) {
+  let neighbourhood_id = req.params.neighbourhood_id;
+  console.log('GET: /neighbourhood -> neighbourhood id:', neighbourhood_id);
+  neighbourhoodModel.find({_id: neighbourhood_id}).exec(function(err, neighbourhood) {
+    if(err) {
+      console.log('neighbourhoods mongoDB error:', err);
+      res.status(404).json({ success: false, message: 'Neighbourhood not found.' });
+    } else {
+      console.log('getting neighbourhoods', neighbourhood);
+      res.json({ success: true, neighbourhoods: neighbourhood });
+    }
+  });
+  return res;
+});
+
+apiRoutes.post('/neighbourhood/:neighbourhood_id*?', function(req, res) {
   // console.log('get users called');
   let neighbourhood = JSON.parse(req.body.neighbourhood);
   let userid = req.body.userid;
   let neighbourhood_id = req.params.neighbourhood_id;
-  console.log('REST call: /neighbourhood -> neighbourhood: ', neighbourhood);
-
+  console.log('POST: /neighbourhood -> neighbourhood: ', neighbourhood);
+  console.log('POST: /neighbourhood -> neighbourhood id:', neighbourhood_id);
   if(neighbourhood_id) {
-    console.log('REST call: /neighbourhood -> neighbourhood id:', neighbourhood_id);
     neighbourhoodModel.findOne({
       neighbourhoodid: neighbourhood_id
     }).exec(function(err, neighbourhood) {
       if(err) {
-       console.log('REST call: /neighbourhood -> neighbourhood mongoDB error:', err);
+       console.log('POST: /neighbourhood -> neighbourhood mongoDB error:', err);
        res.status(500).json({ success: false, message: 'Neighbourhood not found.' });
       } else {
-        console.log('REST call: /neighbourhood -> updating neighbourhood', neighbourhood);
+        console.log('POST: /neighbourhood -> updating neighbourhood', neighbourhood);
 
         res.json(neighbourhood);
       }
       
     });
   } else {
-    console.log('REST call: /neighbourhood -> neighbourhood polygon: ', neighbourhood.encodedpolygon);
+    console.log('POST: /neighbourhood -> neighbourhood polygon: ', neighbourhood.encodedpolygon);
     neighbourhood.createdby = userid;
     neighbourhoodModel.create(neighbourhood, function(err, neighbourhood) {
       if(err) {
-       console.log('REST call: /neighbourhood -> neighbourhood mongoDB error:', err);
+       console.log('POST: /neighbourhood -> neighbourhood mongoDB error:', err);
        res.status(500).json({ success: false, message: 'Could not create neighbourhood.' });
       } else {
-        console.log('REST call: /neighbourhood -> neighbourhood created', neighbourhood);
-
+        console.log('POST: /neighbourhood -> neighbourhood created:', neighbourhood);
+        console.log('POST: /neighbourhood -> Updating user:', userid);
         let query = {_id: userid};
           
         userModel.findOneAndUpdate(query, { $set: { neighbourhood: neighbourhood._id }}, (updateError, numRow) => {
-          console.log('REST call: /neighbourhood ->  mongoDB update:', numRow, updateError);
+          console.log('POST: /neighbourhood ->  mongoDB update:', numRow, updateError);
           if (updateError) {
             res.status(500).json({ success: false, message: 'Neighbourhood created and user could not be set', neighbourhood: neighbourhood, error: updateError });
           }
@@ -424,7 +436,7 @@ apiRoutes.post('/neighbourhood', function(req, res) {
 });
 
 apiRoutes.get('/users', function(req, res) {
-  // console.log('get users called');
+  // console.log('get users call (POST)ed');
 
   userModel.find({}).exec(function(err, users) {
     if(err) {

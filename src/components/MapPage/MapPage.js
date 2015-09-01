@@ -24,10 +24,7 @@ class MapPage extends React.Component {
     this.state = {
       lat: '',
       lng: '',
-      position: {
-        lat: '',
-        lng: ''
-      },
+      position: null,
       neighbourhood: null,
       googleMapLoaded: false,
       drawMode : false
@@ -48,19 +45,6 @@ class MapPage extends React.Component {
     this.setState({googleMapLoaded: true});
   }
 
-  // shouldComponentUpdate(nextProps, nextStates) {
-  //   // console.log('MapPage.shouldComponentUpdate()| existing props:', this.props);
-  //   // console.log('MapPage.shouldComponentUpdate()| nextProps:', nextProps);
-  //   console.log('MapPage.shouldComponentUpdate()| result:', this.state.position !== nextStates.position);
-    
-  //   console.log('MapPage.shouldComponentUpdate()| this.state:', this.state.position);
-  //   console.log('MapPage.shouldComponentUpdate()| nextStates:', nextStates.position);
-
-  //   //console.log('MapPage.shouldComponentUpdate()| context:', this.context);
-  //   //return this.props.position !== nextProps.position;
-  //   return true;
-  // }
-
   findLocation(event) {
     //console.log('AMIT click:', this.state.position);
     //let pos = this.state.position;
@@ -71,7 +55,7 @@ class MapPage extends React.Component {
   }
 
   findCurrentLocation(event) {
-    this.setState({position:{lat: '', lng: ''}});
+    this.setState({position: null});
   }
 
   findLocationByAddress(event) {
@@ -83,8 +67,8 @@ class MapPage extends React.Component {
       if (status == google.maps.GeocoderStatus.OK) {
         console.debug('GEOCODER LOCATION: ', results[0].geometry.location, status);
         //map.setCenter(results[0].geometry.location);
-        let lat = results[0].geometry.location.A;
-        let lng = results[0].geometry.location.F;
+        let lat = results[0].geometry.location.lat();
+        let lng = results[0].geometry.location.lng();
         _this.setState({position:{lat: lat, lng: lng}});
         // var marker = new google.maps.Marker({
         //     map: map,
@@ -105,7 +89,7 @@ class MapPage extends React.Component {
 
   saveNeighbourhood(event) {
     console.log('saveNeighbourhood()|', this.state.neighbourhood);
-    NeighbourhoodService.saveNeighbourhood({encodedpolygon: this.state.neighbourhood.encodedpolygon}, this.props.user.id, (error) => {
+    NeighbourhoodService.saveNeighbourhood({encodedpolygon: this.state.neighbourhood.encodedpolygon}, this.props.user._id, (error) => {
       alert(error);
     });
   }
@@ -126,7 +110,8 @@ class MapPage extends React.Component {
   }
 
   render() {
-    console.debug('MapPage.render()| state:', this.props);
+    console.debug('MapPage.render()| state:', this.state);
+    console.debug('MapPage.render()| props:', this.props);
     //let title = this.props.user.name;
     this.context.onSetTitle('Map');
     return (
@@ -147,7 +132,7 @@ class MapPage extends React.Component {
             <input type="button" value="Save Neighbourhood" disabled={!(this.state.neighbourhood && this.state.neighbourhood.isValid)} onClick={this.saveNeighbourhood.bind(this)} />
           </div>}
         </div>
-        {this.state.googleMapLoaded && <Map position={this.state.position} drawMode={this.state.drawMode} onNeighbourhoodChange={this.onNeighbourhoodChange.bind(this)}/>}
+        {this.state.googleMapLoaded && <Map {...this.props} position={this.state.position} drawMode={this.state.drawMode} onNeighbourhoodChange={this.onNeighbourhoodChange.bind(this)}/>}
       </div>
     );
   }

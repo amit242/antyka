@@ -68,7 +68,7 @@ function withStyles(styles) {
     }
 
     render() {
-      // console.log'withStyles called:', ComposedComponent)
+      //console.log('withStyles called:', this.props);
       return <ComposedComponent {...this.props} />;
     }
 

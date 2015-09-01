@@ -1,5 +1,6 @@
 import keyMirror from 'react/lib/keyMirror';
 
 export default keyMirror({
-  FIND_NEIGHBOURHOOD: null
+  LOAD_NEIGHBOURHOOD: null,
+  SEARCH_NEIGHBOURHOOD: null
 });

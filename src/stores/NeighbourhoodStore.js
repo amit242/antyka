@@ -8,13 +8,18 @@ class NeighbourhoodStore extends BaseStore {
     console.log('NeighbourhoodStore.constructor()');
     this.subscribe(() => this._registerToActions.bind(this));
     this._neighbourhoods = null;
+    this._searchedNeighbourhood = null;
   }
 
   _registerToActions(action) {
     console.log('NeighbourhoodStore._registerToActions()| dispatchToken:', action);
     switch(action.type) {
-      case NeighbourhoodActionTypes.FIND_NEIGHBOURHOOD:
+      case NeighbourhoodActionTypes.LOAD_NEIGHBOURHOOD:
         this._neighbourhoods = action.neighbourhoods;
+        this.emitChange();
+        break;
+      case NeighbourhoodActionTypes.SEARCH_NEIGHBOURHOOD:
+        this._searchedNeighbourhood = action.neighbourhood;
         this.emitChange();
         break;
       default:
@@ -24,6 +29,10 @@ class NeighbourhoodStore extends BaseStore {
 
   getNeighbourhoods() {
     return this._neighbourhoods;
+  }
+
+  getSearchedNeighbourhood() {
+    return this._searchedNeighbourhood;
   }
 }
 

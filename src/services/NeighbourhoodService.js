@@ -29,7 +29,32 @@ class NeighbourhoodService {
     });
   }
 
-  findNeighbourhoodsByViewport(mapViewport) {
+  searchNeighbourhoodById(id, errorCb) {
+    console.log('NeighbourhoodService.searchNeighbourhoodById()| neighbourhood', id);
+    let jwt = localStorage.getItem('closyaar-jwt');
+
+    http.get('/api/neighbourhood/' + id)
+    .type('form')
+    .set('Accept', 'application/json')
+    .set('x-closyaar-access-token', jwt)
+    .end((err, response) => {
+      console.log('NeighbourhoodService.searchNeighbourhoodById()|  err, response', err, response);
+      if(!err && response && response.body && response.body.success) {
+        console.log('NeighbourhoodService.searchNeighbourhoodById()| neighbourhood found!!!');
+        // We get a JWT back.
+        ///let jwt = response.body.token;
+        // We trigger the LoginAction with that JWT.
+        // TODO: may want to review this
+        NeighbourhoodAction.searchNeighbourhood(response.body.neighbourhoods);
+        return true;
+      } else {
+        console.log('NeighbourhoodService.searchNeighbourhoodById()| neighbourhood search failed!!!');
+        errorCb(err);
+      }
+    });
+  }
+
+  findNeighbourhoodsByViewport(mapViewport, errorCb) {
 
     console.log('NeighbourhoodService.findNeighbourhoodsByViewport()| neighbourhood', mapViewport);
     let jwt = localStorage.getItem('closyaar-jwt');
@@ -47,7 +72,7 @@ class NeighbourhoodService {
         ///let jwt = response.body.token;
         // We trigger the LoginAction with that JWT.
         // TODO: may want to review this
-        NeighbourhoodAction.fetchNeighbourhood(response.body.neighbourhoods);
+        NeighbourhoodAction.fetchNeighbourhoods(response.body.neighbourhoods);
         return true;
       } else {
         console.log('NeighbourhoodService.findNeighbourhoodsByViewport()| neighbourhood search failed!!!');
