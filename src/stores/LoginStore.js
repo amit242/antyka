@@ -13,11 +13,16 @@ class LoginStore extends BaseStore {
     this._user = null;
     this._jwt = null;
     this._isloggedin = null;
+    this._failedLogin = null;
   }
 
   _registerToActions(action) {
     console.log('LoginStore._registerToActions()| dispatchToken:', action);
     switch(action.type) {
+      case ActionTypes.LOGIN_FAILED:
+        this._failedLogin = true;
+        this.emitChange();
+        break;
       case ActionTypes.LOGIN_USER:
         //console.log('AMIT LOGINSTORE: emitchange with jwt', action.jwt);
         this._jwt = action.jwt;
@@ -49,6 +54,10 @@ class LoginStore extends BaseStore {
 
   get jwt() {
     return this._jwt;
+  }
+
+  isLoginFailed() {
+    return this._failedLogin;
   }
 
   isLoggedIn() {

@@ -8,6 +8,7 @@ import express from 'express';
 import React from 'react';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 import jwt from 'jsonwebtoken';
 //import './dispatchers/Dispatcher';
 //import './stores/AppStore';
@@ -35,6 +36,7 @@ server.set('superSecret', dbConfig.secret); // secret variable
 // use body parser so we can get info from POST and/or URL parameters
 server.use(bodyParser.urlencoded({ extended: false }));
 server.use(bodyParser.json());
+server.use(cookieParser());
 
 // TODO: move transporter to a diff file
 //--------------------------------------------------------------------------------
@@ -461,6 +463,7 @@ server.get('*', async (req, res, next) => {
   console.log('=============================================');
   console.log('server.server.get()| render start...', dt.getHours() + ':' + dt.getMinutes() + ':' + dt.getSeconds() + ':' +  dt.getMilliseconds());
   console.log('server.server.get()| req query string==>', req.query);
+  console.log('server.server.get()| req cookies string==>', req.cookies.rememberuser);
   try {
     let isMobile = ClientDetection.isMobile(req.headers['user-agent']);
     // console.log('Serverjs AMIT: isMobile:', isMobile);
@@ -531,7 +534,7 @@ server.get('*', async (req, res, next) => {
       console.log('server.Router.run()| router running...');
       console.log('server.Router.run()| router Query params:', state.query);
       
-      data.body = React.renderToString(<Handler query={state.query} context={{
+      data.body = React.renderToString(<Handler rememberuser={req.cookies.rememberuser === 'true'} context={{
         onInsertCss: value => css.push(value),
         onSetTitle: value => {data.title = value; },
         onSetMeta: (key, value) => data[key] = value,

@@ -16,6 +16,7 @@ class AuthService {
           LoginActions.loginUser(jwt, response.body.user);
         } else {
           console.log('AuthService.verifyJWT()| JWT verification Fail!!!');
+          LoginActions.loginFailed();
         }
         // console.log('LoginAction.loginUser()| RouterContainer.get().getCurrentQuery():', RouterContainer.get().getCurrentPathname());
         // var nextPath = RouterContainer.get().getCurrentQuery() && RouterContainer.get().getCurrentQuery().redirect || '/';

@@ -10,8 +10,9 @@ export default {
 
     if(jwt) {
       
-      console.log('AuthService.verifyJWT()| Saving jwt in localStorage for user...');
+      console.log('LoginAction.verifyJWT()| Saving jwt in localStorage for user...', document.cookie);
       localStorage.setItem(jwtKey, jwt);
+      document.cookie="rememberuser=true";
       // Send the action to all stores through the Dispatcher
       Dispatcher.dispatch({
         type: ActionTypes.LOGIN_USER,
@@ -23,7 +24,16 @@ export default {
     }
   },
 
+  loginFailed: () => {
+    console.log('LoginAction.loginFailed()| ');
+    Dispatcher.dispatch({
+      type: ActionTypes.LOGIN_FAILED
+    });
+  },
+
   logoutUser: () => {
+    console.log('LoginAction.logoutUser()...'); 
+    document.cookie="rememberuser=false";
     RouterContainer.get().transitionTo('/login');
     localStorage.removeItem(jwtKey);
     Dispatcher.dispatch({

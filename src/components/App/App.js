@@ -35,6 +35,11 @@ export default class App extends React.Component {
     };
   }
 
+  componentWillUnmount() {
+    LoginStore.removeChangeListener(this.changeListener);
+    AppStore.removeChangeListener(this.changePageListener);
+  }
+
   componentDidMount() {
     this.changeListener = this._onChange.bind(this);
     this.changePageListener = this._onPageChange.bind(this);
@@ -50,16 +55,10 @@ export default class App extends React.Component {
     this.setState(this._getLoginState());
   }
 
-  componentWillUnmount() {
-    LoginStore.removeChangeListener(this.changeListener);
-    AppStore.removeChangeListener(this.changePageListener);
-  }
-
   render() {
     console.log('App.Render()| client?:', canUseDOM);
-    console.log('App.Render()| trylogin?:', this.props);
-    console.log('App.Render()| context:', this.context);
-    console.log('App.Render()| isLoggedIn?:', this._getLoginState());
+    console.log('App.Render()| props:', this.props);
+    console.log('App.Render()| state:', this.state);
 
     this.context.onSetTitle('Closyaar');
 
@@ -72,10 +71,10 @@ export default class App extends React.Component {
     
     return (
       <div className="app-container">
-        <Header LoginState={this._getLoginState()}/>
-        <RouteHandler user={this._getLoginState().user}/>
+        <Header LoginState={this.state}/>
+        <RouteHandler {...this.props} user={this.state.user}/>
         <Feedback />
-        <Footer LoginState={this._getLoginState()}/>
+        <Footer LoginState={this.state}/>
       </div>);
   }
 }

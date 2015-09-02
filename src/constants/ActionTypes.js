@@ -9,5 +9,6 @@ export default keyMirror({
   LOGIN_USER: null,
   LOGOUT_USER: null,
   SIGNUP_USER: null,
+  LOGIN_FAILED: null,
   TOKEN_VERIFIED: null
 });

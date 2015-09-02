@@ -1,6 +1,5 @@
 import http from 'superagent';
 import NeighbourhoodAction from '../actions/NeighbourhoodAction';
-import jwt from 'jsonwebtoken';
 
 class NeighbourhoodService {
 

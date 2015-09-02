@@ -25,8 +25,7 @@ export default class AntykaGeometry {
     //console.log('findSelfIntersects() simple:', validator.isSimple(), validator.isSimpleLinearGeometry(jstsPolygon), jstsPolygon);
 
     if (validator.isSimpleLinearGeometry(jstsPolygon)) {
-      
-      return;
+      return null;
     }
 
     var res = [];
