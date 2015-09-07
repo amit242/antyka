@@ -16,6 +16,7 @@ class TextBox {
   };
 
   render() {
+    console.log('Textbox this.props', this.props);
     return (
       <div className={classNames(this.props.className, 'TextBox')}>
         <span className="TextBox-span">{this.props.textboxLabel}</span>

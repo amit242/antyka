@@ -11,18 +11,22 @@
 
     &-floating {
         position: fixed;
-        padding: 20px;
+        padding: 5px;
         top: 10%;
-        left: 10%;
+        left: 3%;
         z-index: 300;
         height: auto;
-        width: auto;
-        max-width: 310px;
-        min-width: 210px;
+        width: 420px;
         //background-color: #DDD;
         //opacity: 0.7;
         background: rgba(255, 255, 255, 0.5);
         box-shadow: 0px 3px 15px #333;
+
+        &-searchbox {
+            left: 30px;
+            position: relative;
+            width: 300px;
+        }
 
         &.bottom {
             top: auto;
@@ -38,6 +42,33 @@
             background-color: #DD6;
         }
         
+        img.menu {
+            position: absolute;
+        }
+
+        img.selected {
+            border-width: 1px;
+            border-style: inset;
+            background-color: #CCC;
+        }
+
+        &-icon {
+            padding: 12px 0px;
+            position: absolute;
+
+            &.search {
+                left: 345px;
+            }
+
+            &.map-pin {
+                left: 370px;
+            }
+
+            &.location {
+                left: 395px;
+            }
+        }
+
         input[type=button] {
             .antyka-button;
             margin: 3px 0px;
@@ -46,5 +77,9 @@
         input[type=button]:disabled {
             background: #dddddd;
         }
+    }
+
+    .expand {
+        top: 30%;
     }
 }

@@ -14,7 +14,7 @@ class Map extends Component {
 
   static propTypes = {
     position: PropTypes.instanceOf(Object),
-    drawMode: PropTypes.bool.isRequired,
+    drawMode: PropTypes.bool,
     onNeighbourhoodChange: React.PropTypes.func.isRequired,
     className: PropTypes.string
   };
@@ -42,6 +42,16 @@ class Map extends Component {
     console.log('shouldComponentUpdate() existingPolygons:', this.state.existingPolygons, nextStates.existingPolygons, this.state.existingPolygons !== nextStates.existingPolygons);
     //return this.props.position !== nextProps.position || this.props.drawMode !== nextProps.drawMode;
     // TODO: need a more gracefull way to do this
+    
+    if(!nextProps.drawMode) {
+      console.log('discard mode:', nextProps.drawMode); 
+      this.drawingManager.setDrawingMode(null);
+      /*if(this.neighbourhood) {
+        console.log('discard mode2');
+        this.neighbourhood.setMap(null);
+        this.closeInfoWindow();
+      }*/
+    }
     return !_.isEqual(this.props.position, nextProps.position) || this.props.drawMode !== nextProps.drawMode || this.state.existingPolygons !== nextStates.existingPolygons;
   }
 
@@ -66,6 +76,10 @@ class Map extends Component {
           center: {lat: -34.397, lng: 150.644},
           zoom: 15,
           zoomControl: true,
+          panControl: true,
+          panControlOptions: {
+            position: google.maps.ControlPosition.RIGHT_BOTTOM
+          },
           zoomControlOptions: {
               style: google.maps.ZoomControlStyle.LARGE,
               position: google.maps.ControlPosition.RIGHT_TOP
@@ -109,6 +123,7 @@ class Map extends Component {
     google.maps.event.addListener(this.drawingManager, 'overlaycomplete', function(e) {
       //console.log('Overlay complete:', e);
       console.debug('Overlay complete:', e.overlay.getPath().getArray());
+      console.debug('Overlay complete:', this.props);
       let newShape = e.overlay;
       this.drawingManager.setDrawingMode(null);
 
@@ -212,6 +227,9 @@ class Map extends Component {
     let changed = {isValid: isValid, encodedpolygon: encodedPath};
     if(!isValid) {
       changed.errorMsg = this.state.infoWindow.getContent();
+    } else {
+      let centerPos = this.findPolygonCenter(newShape.getPath());
+      changed.neighbourhoodCenter = {lat: centerPos.lat(), lng: centerPos.lng()};
     }
     this.props.onNeighbourhoodChange(changed);
   }
@@ -222,8 +240,7 @@ class Map extends Component {
     if(area > 250000 || area < 1000)
     {
       let centerPos = this.findPolygonCenter(newShape.getPath());
-      let pos = new google.maps.LatLng(parseFloat(centerPos[0]), parseFloat(centerPos[1]));
-      console.log('Map.validNeighbourhoodArea()| center of polygon:', centerPos, pos);
+      console.log('Map.validNeighbourhoodArea()| center of polygon:', centerPos);
       this.handleMapError('Neighbourhood area must be between 1000 and 250000 sq meters, your drawing area: ' + area + ' sq meters', centerPos);
       return false;
     }
@@ -353,12 +370,11 @@ class Map extends Component {
     if(this.props.drawMode) {
       this.drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
       this.closeInfoWindow();
-    } else {
+    }  else {
       if(this.neighbourhood) {
         this.neighbourhood.setMap(null);
         this.closeInfoWindow();
       }
-
       if(this.props.position && this.props.position.lat && this.props.position.lng) {
         console.log('Map.render()| Has position:', this.props.position.lat, this.props.position.lng);
         this.findAndSetLocation(this.props.position.lat, this.props.position.lng, true);

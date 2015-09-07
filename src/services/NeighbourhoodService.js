@@ -4,7 +4,7 @@ import NeighbourhoodAction from '../actions/NeighbourhoodAction';
 class NeighbourhoodService {
 
   saveNeighbourhood(neighbourhood, userid, errorCb) {
-    console.log('NeighbourhoodService.loadNeighbourhoods()| neighbourhood', neighbourhood);
+    console.log('NeighbourhoodService.saveNeighbourhood()| neighbourhood', neighbourhood);
     let jwt = localStorage.getItem('closyaar-jwt');
 
     http.post('/api/neighbourhood')
@@ -28,7 +28,7 @@ class NeighbourhoodService {
     });
   }
 
-  searchNeighbourhoodById(id, errorCb) {
+  searchNeighbourhoodById(id, successCb, errorCb) {
     console.log('NeighbourhoodService.searchNeighbourhoodById()| neighbourhood', id);
     let jwt = localStorage.getItem('closyaar-jwt');
 
@@ -44,7 +44,8 @@ class NeighbourhoodService {
         ///let jwt = response.body.token;
         // We trigger the LoginAction with that JWT.
         // TODO: may want to review this
-        NeighbourhoodAction.searchNeighbourhood(response.body.neighbourhoods);
+        successCb(response.body.neighbourhoods[0]);
+        //NeighbourhoodAction.searchNeighbourhood(response.body.neighbourhoods);
         return true;
       } else {
         console.log('NeighbourhoodService.searchNeighbourhoodById()| neighbourhood search failed!!!');
